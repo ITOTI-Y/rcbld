@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{683879BC-BB02-4545-9EE1-9C5779A759AE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RCBldGH</RootNamespace>
+    <AssemblyName>RCBldGH</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="RhinoCommon">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SDK\RhinoCommon.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Grasshopper">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SDK\Grasshopper.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="GH_IO">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SDK\GH_IO.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CenGenerator.cs" />
+    <Compile Include="Components\2.Envelope\2.1envelopeSurface\MaterialAssign.cs" />
+    <Compile Include="Components\2.Envelope\2.1envelopeSurface\MaterialAssign4.0.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\Toward.cs" />
+    <Compile Include="Components\2.Envelope\2.3zone\NewZoneComp.cs" />
+    <Compile Include="Components\2.Envelope\2.3zone\NewZoneComp1.1.cs" />
+    <Compile Include="Components\2.Envelope\2.5Opaque\EnvelopeSettingGoo.cs" />
+    <Compile Include="Components\2.Envelope\2.5Opaque\EnvelopSurfaceParam.cs" />
+    <Compile Include="Components\4.Schedule\ScheduleSetting.cs" />
+    <Compile Include="Components\3.Program\Program.cs" />
+    <Compile Include="Components\5.Basics\BasicsComp.cs" />
+    <Compile Include="Components\5.Basics\BasicsCompNew.cs" />
+    <Compile Include="Components\5.Basics\BuildingTypeComp.cs" />
+    <Compile Include="Components\5.Basics\GroundTypeComp.cs" />
+    <Compile Include="Components\5.Basics\TerrainClassComp.cs" />
+    <Compile Include="Components\7.simulation\BEMComp.cs" />
+    <Compile Include="Components\7.simulation\BEM_New.cs" />
+    <Compile Include="Components\7.simulation\NewRunComp.cs" />
+    <Compile Include="Components\7.simulation\RunComp.cs" />
+    <Compile Include="Components\studyAndTest\Shadow.cs" />
+    <Compile Include="Components\studyAndTest\Shadow1.1.cs" />
+    <Compile Include="Components\studyAndTest\ShadowAssign.cs" />
+    <Compile Include="Components\studyAndTest\Shadow_new.cs" />
+    <Compile Include="Components\studyAndTest\SolarCalculateBeamNew.cs" />
+    <Compile Include="Components\studyAndTest\SolarDataFromEPW_New.cs" />
+    <Compile Include="Modules\BusData.cs" />
+    <Compile Include="Components\6.Energy\6.1Dhw\DhwComp.cs" />
+    <Compile Include="Components\6.Energy\6.3\BemTypeComp.cs" />
+    <Compile Include="Components\6.Energy\6.3\EnergySourceComp.cs" />
+    <Compile Include="Components\6.Energy\6.3\EnergySourceTypeComp.cs" />
+    <Compile Include="Components\2.Envelope\2.1envelopeSurface\SuperSurfaceGoo.cs" />
+    <Compile Include="Components\2.Envelope\2.1envelopeSurface\SuperSurfaceParam.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowWallRate.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowComp.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowGoo.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowParam.cs" />
+    <Compile Include="Components\2.Envelope\2.3zone\ZoneGoo.cs" />
+    <Compile Include="Components\2.Envelope\2.3zone\ZoneParam.cs" />
+    <Compile Include="Components\3.Program\3.4Hvac\CopPairGroupComp.cs" />
+    <Compile Include="Components\3.Program\3.4Hvac\HvacComp.cs" />
+    <Compile Include="Components\1.Material\MaterialSetting.cs" />
+    <Compile Include="Components\6.Energy\6.2Pumps\PumpControlTypeComp.cs" />
+    <Compile Include="Components\6.Energy\6.2Pumps\PumpsComp.cs" />
+    <Compile Include="Components\9.parametric tool\Bake.cs" />
+    <Compile Include="Components\9.parametric tool\DataRecord.cs" />
+    <Compile Include="Components\9.parametric tool\Trigger.cs" />
+    <Compile Include="Components\8.Reader\IndoorTemperatureReaderComp.cs" />
+    <Compile Include="Components\8.Reader\HourlyReaderComp.cs" />
+    <Compile Include="Components\8.Reader\MonthlyReaderComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\RenewableComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\PvComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\PvTypeComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\PvVentilationTypeComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\SwhComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\WindTurbinesComp.cs" />
+    <Compile Include="Components\4.Schedule\Schedules\AirInfiltrationScheduleComp.cs" />
+    <Compile Include="Components\4.Schedule\Schedules\MonthlyBusComp.cs" />
+    <Compile Include="Components\4.Schedule\Schedules\MonthlyItssComp.cs" />
+    <Compile Include="Components\6.Energy\6.1Dhw\DhwDistributionSystemComp.cs" />
+    <Compile Include="Components\6.Energy\6.1Dhw\DhwGenerationSystemComp.cs" />
+    <Compile Include="Components\3.Program\3.4Hvac\HvacExhaustAirRecirculationTypeComp.cs" />
+    <Compile Include="Components\3.Program\3.4Hvac\HvacHeatRecoveryTypeComp.cs" />
+    <Compile Include="Components\6.Energy\6.5Renewable\OrientationComp.cs" />
+    <Compile Include="Components\3.Program\3.2type\ZoneAirInfiltrationLevelComp.cs" />
+    <Compile Include="Components\3.Program\3.2type\ZoneVentilationTypeComp.cs" />
+    <Compile Include="Components\3.Program\LightingTemplateComp.cs" />
+    <Compile Include="Components\4.Schedule\Schedules\BuildingUseScheduleComp.cs" />
+    <Compile Include="Components\4.Schedule\Schedules\DayScheduleComp.cs" />
+    <Compile Include="Components\4.Schedule\Schedules\IndoorTempStptScheduleComp.cs" />
+    <Compile Include="Components\Types\TypeListAttributes.cs" />
+    <Compile Include="Components\Types\TypeListItem.cs" />
+    <Compile Include="Components\Types\TypeList.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowShadingControlComp.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowShadingTypeComp.cs" />
+    <Compile Include="Components\2.Envelope\2.2window\WindowShadingWhereComp.cs" />
+    <Compile Include="Components\1.Material\ExternalFloorMaterialComp.cs" />
+    <Compile Include="Components\1.Material\ExternalWallMaterialComp.cs" />
+    <Compile Include="Components\1.Material\GroundMaterialComp.cs" />
+    <Compile Include="Components\1.Material\InternalFloorMaterialComp.cs" />
+    <Compile Include="Components\1.Material\InternalWallMaterialComp.cs" />
+    <Compile Include="Components\1.Material\RoofMaterialComp.cs" />
+    <Compile Include="Components\1.Material\WindowMaterialComp.cs" />
+    <Compile Include="Domains\CopPairGroup.cs" />
+    <Compile Include="Domains\Orientation.cs" />
+    <Compile Include="Domains\TimespanSchedulePair.cs" />
+    <Compile Include="Modules\BEM.cs" />
+    <Compile Include="Modules\CalibrationPara.cs" />
+    <Compile Include="Modules\SuperBrep.cs" />
+    <Compile Include="Modules\SuperSurface.cs" />
+    <Compile Include="Modules\Opaque.cs" />
+    <Compile Include="Modules\DHW.cs" />
+    <Compile Include="Modules\EnergySources.cs" />
+    <Compile Include="Modules\EnvelopeSetting.cs" />
+    <Compile Include="Modules\Material.cs" />
+    <Compile Include="Modules\HVAC.cs" />
+    <Compile Include="Modules\LightingSetting.cs" />
+    <Compile Include="Modules\Pumps.cs" />
+    <Compile Include="Modules\PV.cs" />
+    <Compile Include="Modules\Renewable.cs" />
+    <Compile Include="Modules\Schedules\DaySchedule.cs" />
+    <Compile Include="Modules\Slab.cs" />
+    <Compile Include="Modules\SWH.cs" />
+    <Compile Include="Domains\TimespanDataPair.cs" />
+    <Compile Include="Modules\Basics.cs" />
+    <Compile Include="Modules\Schedule.cs" />
+    <Compile Include="Modules\Window.cs" />
+    <Compile Include="Modules\WindTurbines.cs" />
+    <Compile Include="Modules\Zone.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RCBldGHComponent.cs" />
+    <Compile Include="RCBldGHInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ultaricon\Class1.cs" />
+    <Compile Include="Utils\Converter.cs" />
+    <Compile Include="Utils\FileTools.cs" />
+    <Compile Include="Utils\TimespanTools.cs" />
+    <Compile Include="Utils\VectorTools.cs" />
+    <Compile Include="Utils\SurfaceTools.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\window material.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OIG.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\roofmaterial.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exfloor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exwall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\interwall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\interfloor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\trigger.png" />
+    <None Include="Resources\type_pv.png" />
+    <None Include="Resources\type_pvv.png" />
+    <None Include="Resources\type_ori.png" />
+    <None Include="Resources\pv.png" />
+    <None Include="Resources\wind.png" />
+    <None Include="Resources\swh.png" />
+    <None Include="Resources\pump_type.png" />
+    <None Include="Resources\pump.png" />
+    <None Include="Resources\Schedule_bus_d.png" />
+    <None Include="Resources\Schedule_itss_d.png" />
+    <None Include="Resources\Schedule_itss.png" />
+    <None Include="Resources\Schedule_infi.png" />
+    <None Include="Resources\Schedule_bus.png" />
+    <None Include="Resources\Schedule.png" />
+    <None Include="Resources\type_gro.png" />
+    <None Include="Resources\type_bld.png" />
+    <None Include="Resources\type_ter.png" />
+    <None Include="Resources\type_ven.png" />
+    <None Include="Resources\type_air.png" />
+    <None Include="Resources\zone_old.png" />
+    <None Include="Resources\zone_schedule.png" />
+    <None Include="Resources\zone_program.png" />
+    <None Include="Resources\zone.png" />
+    <None Include="Resources\toward.png" />
+    <None Include="Resources\windowType.png" />
+    <None Include="Resources\windowPosition.png" />
+    <None Include="Resources\windowControl.png" />
+    <None Include="Resources\slab.png" />
+    <None Include="Resources\undergroundwall.png" />
+    <None Include="Resources\renewable energy.png" />
+    <None Include="Resources\WWR.png" />
+    <None Include="Resources\Run.png" />
+    <None Include="Resources\window.png" />
+    <None Include="Resources\hao.png" />
+    <None Include="Resources\lighting setting.png" />
+    <None Include="Resources\HAVC.png" />
+    <None Include="Resources\face.png" />
+    <None Include="Resources\envelopSurface.png" />
+    <None Include="Resources\HAVC_cop.png" />
+    <None Include="Resources\HAVC_rec.png" />
+    <None Include="Resources\HAVC_ear.png" />
+    <None Include="Resources\basic.png" />
+    <None Include="Resources\DHW_type.png" />
+    <None Include="Resources\DHW.png" />
+    <None Include="Resources\DHW_form.png" />
+    <None Include="Resources\ES.png" />
+    <None Include="Resources\ES_type.png" />
+    <None Include="Resources\Bem_type.png" />
+    <None Include="Resources\BEM.png" />
+    <None Include="Resources\BUS.png" />
+    <None Include="Resources\monthly reader.png" />
+    <None Include="Resources\hourly reader.png" />
+    <None Include="Resources\indoor temperature reader.png" />
+    <None Include="Resources\dataRecord.png" />
+    <None Include="Resources\bake.png" />
+    <Content Include="Resources\mSetting.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\MSettingAssign.png" />
+    <Content Include="Resources\name.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>Copy "$(TargetPath)" "$(TargetDir)$(ProjectName).gha"
+Erase "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <FallbackCulture>en-US</FallbackCulture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartProgram>C:\Program Files\Rhino 6\System\Rhino.exe</StartProgram>
+    <StartArguments>
+    </StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+</Project>
