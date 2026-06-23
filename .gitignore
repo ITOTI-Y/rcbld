@@ -12,3 +12,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+*.exe
+*.gha
+_dev/
