@@ -1,0 +1,978 @@
+'__pyarmor_enter_47074__(...)'
+
+try:
+    import os
+    import collections
+    import copy
+    import comfort
+    import weather
+    import time
+    import numpy as np
+    import lib
+    import pandas as pd
+    parent_folder = os.path.abspath(os.path.join(os.getcwd(), os.pardir)) + '\\'
+    
+    def print_progress_bar(iteration, total, prefix, suffix, length):
+        '''
+    Call in a loop to create terminal progress bar
+    '''
+        '__pyarmor_enter_47077__(...)'
+        
+        try:
+            _var_var_0 = 100 * (iteration / float(total))
+            _var_var_1 = int(length * iteration // total)
+            _var_var_2 = '█' * _var_var_1 + '-' * (length - _var_var_1)
+            _var_var_3 = time.time() - print_progress_bar.start_time
+            if iteration > 0:
+                _var_var_4 = _var_var_3 * total / iteration
+                _var_var_5 = _var_var_4 - _var_var_3
+                _var_var_6 = f''' | Time remaining: {_var_var_5:.1f}s'''
+            else:
+                _var_var_6 = ''
+            print(f'''\r{prefix} |{_var_var_2}| {_var_var_0:.1f}% {suffix}{_var_var_6}''', '', **('end',))
+            if iteration == total:
+                print()
+        finally:
+            '__pyarmor_exit_47078__(...)'
+        return None
+
+
+    
+    class Simulation:
+        '__pyarmor_enter_47080__(...)'
+        
+        try:
+            
+            def __init__(self, input_dict, wea_file, **kwargs):
+                '__pyarmor_enter_47083__(...)'
+                
+                try:
+                    if kwargs is not None:
+                        for _var_var_7, _var_var_8 in list(kwargs.items()):
+                            setattr(self, _var_var_7.replace(' ', '_'), _var_var_8)
+                    self.input_dict = input_dict
+                    if wea_file == 'default':
+                        self.W = weather.Weather(self.input_dict['Basics']['Weather File'])
+                    else:
+                        self.W = weather.Weather(wea_file)
+                    self.wea_dict = self.W.getWeaDict()
+                    self.getInputClass()
+                finally:
+                    '__pyarmor_exit_47084__(...)'
+                return None
+
+
+            
+            def getInputClass(self):
+                '__pyarmor_enter_47086__(...)'
+                
+                try:
+                    if hasattr(self, 'if_print') and self.if_print == True:
+                        print('Reading model parameters from the input file...')
+                    if hasattr(self, 'first_day'):
+                        _var_var_9 = lib.Pre_Calculation(self.wea_dict, self.input_dict, self.first_day)
+                    else:
+                        _var_var_9 = lib.Pre_Calculation(self.wea_dict, self.input_dict, 'sun')
+                    if not hasattr(self, 'order'):
+                        self.order = 1
+                        self.solver = 'crank-nicholson'
+                    if not hasattr(self, 'if_pmv'):
+                        self.if_pmv = True
+                    _var_var_10 = _var_var_9.getDict()
+                    self.pre_dict = _var_var_10
+                    self.PV = lib.SubSystem(_var_var_10['PV'])
+                    self.General = lib.SubSystem(_var_var_10['General'])
+                    self.DHW = lib.SubSystem(_var_var_10['DHW'])
+                    self.Pumps = lib.SubSystem(_var_var_10['Pumps'])
+                    self.BEM = lib.SubSystem(_var_var_10['BEM'])
+                    self.Wind_Turbines = lib.SubSystem(_var_var_10['Wind_Turbines'])
+                    self.At = self.General.At
+                    self.Am = self.General.Am
+                    self.T_er = self.wea_dict['T_er']
+                    self.Te = self.wea_dict['DBT']
+                    self.ws = self.wea_dict['wind']
+                    self.rh = self.wea_dict['RH']
+                    self.rse = np.where(self.ws <= 1.5, 0.08, np.where(self.ws <= 2.5, 0.06, np.where(self.ws <= 3.5, 0.05, np.where(self.ws <= 6, 0.04, np.where(self.ws <= 8.5, 0.03, 0.02)))))
+                    self.P_shading_threshold = 26 if self.General.building_type == 1 else 23
+                    if self.order == 2:
+                        self.Cm = self.General.Cm / 3600
+                        self.Ct = 0.35 * self.General.Cm / 3600
+                    elif self.order == 1:
+                        self.Cm = self.General.Cm / 3600
+                finally:
+                    '__pyarmor_exit_47087__(...)'
+                    return None
+                    '__pyarmor_exit_47087__(...)'
+                    return None
+
+
+            
+            def solarGain(self):
+                '__pyarmor_enter_47089__(...)'
+                
+                try:
+                    if hasattr(self, 'if_print') and self.if_print == True:
+                        print('Calculating solar heat gain by default simplified solar radiation calculation method...')
+                    (_var_var_12, _var_var_11) = next(iter(self.pre_dict['Zones'].items()))
+                    if hasattr(self.pre_dict['Zones'][_var_var_12], 'Solar') == False:
+                        print('no extra solar')
+                        self.SCal_dict = self.W.getCalDict()
+                        for None in list(self.pre_dict['Zones'].items()):
+                            (_var_var_12, _var_var_11) = None
+                            _var_var_11.qi_env_dict_w = { }
+                            _var_var_11.qi_env_dict_op = { }
+                            for _var_var_13, _var_var_14 in list(_var_var_11.Envelopes.__dict__.items()):
+                                if np.array(list(_var_var_14.values())).shape[1] == 12:
+                                    _var_var_11.qi_env_dict_w[_var_var_13] = { }
+                                    _var_var_11.qi_env_dict_w[_var_var_13]['gain'] = { }
+                                    _var_var_11.qi_env_dict_w[_var_var_13]['reflection'] = { }
+                                    _var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'] = { }
+                                    for _var_var_15, _var_var_16 in list(_var_var_14.items()):
+                                        _var_var_17 = 1 if _var_var_15 != 'G' or _var_var_16[1] == 0 or _var_var_15 == 'R' else self.SCal_dict['overhang'][_var_var_16[1]][_var_var_15]
+                                        _var_var_18 = 1 if _var_var_16[2] == 0 or _var_var_15 == 'R' else self.SCal_dict['fin'][_var_var_16[2]][_var_var_15]
+                                        _var_var_19 = 1 if _var_var_16[3] == 0 or _var_var_15 == 'R' else self.SCal_dict['horizon'][_var_var_16[3]][_var_var_15]
+                                        _var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'][_var_var_15] = _var_var_16[4]
+                                        _var_var_11.qi_env_dict_w[_var_var_13]['gain'][_var_var_15] = _var_var_17 * _var_var_18 * _var_var_19 * self.SCal_dict['surf'][_var_var_15]['GSR'] * _var_var_16[0] * (1 - _var_var_16[-5]) * _var_var_16[-1]
+                                        _var_var_11.qi_env_dict_w[_var_var_13]['reflection'][_var_var_15] = _var_var_16[5] * self.rse * _var_var_16[6] * _var_var_16[0] * _var_var_16[-4] * (self.Te - self.T_er)
+                                    _var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'] = np.array(list(_var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'].values()))
+                                    _var_var_11.qi_env_dict_w[_var_var_13]['gain'] = np.array(list(_var_var_11.qi_env_dict_w[_var_var_13]['gain'].values())).transpose()
+                                    if np.count_nonzero(_var_var_11.qi_env_dict_w[_var_var_13]['gain']) == 0:
+                                        del _var_var_11.qi_env_dict_w[_var_var_13]
+                                if np.array(list(_var_var_14.values())).shape[1] == 5:
+                                    _var_var_11.qi_env_dict_op[_var_var_13] = { }
+                                    for _var_var_15, _var_var_16 in list(_var_var_14.items()):
+                                        if _var_var_15 != 'G':
+                                            _var_var_11.qi_env_dict_op[_var_var_13][_var_var_15] = self.SCal_dict['surf'][_var_var_15]['GSR'] * _var_var_16[0] * _var_var_16[2] * _var_var_16[3] * self.rse - _var_var_16[1] * self.rse * _var_var_16[2] * _var_var_16[0] * _var_var_16[-1] * (self.Te - self.T_er)
+                                            continue
+                                            if np.count_nonzero(np.array(list(_var_var_11.qi_env_dict_op[_var_var_13].values()))) == 0:
+                                                del _var_var_11.qi_env_dict_op[_var_var_13]
+                                                continue
+                                                _var_var_11.q_sol_op = None(np.sum((lambda .0: [ np.sum(np.array(list(_var_var_20.values())), 0, **('axis',)) for _var_var_13, _var_var_20 in .0 if np.array(list(zone.Envelopes.__dict__[_var_var_13].values())).shape[1] == 5 ])(list(_var_var_11.qi_env_dict_op.items()))), 0, **('axis',)) / _var_var_11.Af
+                                                _var_var_11.q_sol_w_rfl = None(np.sum((lambda .0: [ np.sum(np.array(list(_var_var_20['reflection'].values())), 0, **('axis',)) for _var_var_13, _var_var_20 in .0 if np.array(list(zone.Envelopes.__dict__[_var_var_13].values())).shape[1] == 12 ])(list(_var_var_11.qi_env_dict_w.items()))), 0, **('axis',)) / _var_var_11.Af
+                                                _var_var_11.q_sol_w = np.where(self.Te > self.P_shading_threshold, np.sum(np.array((lambda .0: [ np.matmul(_var_var_21['gain'], _var_var_21['shading_SRF']) for _var_var_13, _var_var_21 in .0 ])(list(_var_var_11.qi_env_dict_w.items()))), 0, **('axis',)) / _var_var_11.Af - _var_var_11.q_sol_w_rfl, np.sum(np.array((lambda .0: [ np.sum(_var_var_21['gain'], 1, **('axis',)) for _var_var_13, _var_var_21 in .0 ])(list(_var_var_11.qi_env_dict_w.items()))), 0, **('axis',)) / _var_var_11.Af - _var_var_11.q_sol_w_rfl)
+                                                _var_var_11.q_sol = _var_var_11.q_sol_w + _var_var_11.q_sol_op
+                                                continue
+                                            else:
+                                                print('has extra solar')
+                                                self.SCal_dict = self.W.getCalDict()
+                                                for None in list(self.pre_dict['Zones'].items()):
+                                                    (_var_var_12, _var_var_11) = None
+                                                    _var_var_11.qi_env_dict_w = { }
+                                                    _var_var_11.qi_env_dict_op = { }
+                                                    for _var_var_13, _var_var_14 in list(_var_var_11.Envelopes.__dict__.items()):
+                                                        if np.array(list(_var_var_14.values())).shape[1] == 12:
+                                                            _var_var_11.qi_env_dict_w[_var_var_13] = { }
+                                                            _var_var_11.qi_env_dict_w[_var_var_13]['gain'] = { }
+                                                            _var_var_11.qi_env_dict_w[_var_var_13]['reflection'] = { }
+                                                            _var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'] = { }
+                                                            for _var_var_15, _var_var_16 in list(_var_var_14.items()):
+                                                                _var_var_17 = 1 if _var_var_15 != 'G' or _var_var_16[1] == 0 or _var_var_15 == 'R' else self.SCal_dict['overhang'][_var_var_16[1]][_var_var_15]
+                                                                _var_var_18 = 1 if _var_var_16[2] == 0 or _var_var_15 == 'R' else self.SCal_dict['fin'][_var_var_16[2]][_var_var_15]
+                                                                _var_var_19 = 1 if _var_var_16[3] == 0 or _var_var_15 == 'R' else self.SCal_dict['horizon'][_var_var_16[3]][_var_var_15]
+                                                                _var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'][_var_var_15] = _var_var_16[4]
+                                                                _var_var_11.qi_env_dict_w[_var_var_13]['gain'][_var_var_15] = _var_var_17 * _var_var_18 * _var_var_19 * self.SCal_dict['surf'][_var_var_15]['GSR'] * _var_var_16[0] * (1 - _var_var_16[-5]) * _var_var_16[-1]
+                                                                _var_var_11.qi_env_dict_w[_var_var_13]['reflection'][_var_var_15] = _var_var_16[5] * self.rse * _var_var_16[6] * _var_var_16[0] * _var_var_16[-4] * (self.Te - self.T_er)
+                                                            _var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'] = np.array(list(_var_var_11.qi_env_dict_w[_var_var_13]['shading_SRF'].values()))
+                                                            _var_var_11.qi_env_dict_w[_var_var_13]['gain'] = np.array(list(_var_var_11.qi_env_dict_w[_var_var_13]['gain'].values())).transpose()
+                                                            if np.count_nonzero(_var_var_11.qi_env_dict_w[_var_var_13]['gain']) == 0:
+                                                                del _var_var_11.qi_env_dict_w[_var_var_13]
+                                                        if np.array(list(_var_var_14.values())).shape[1] == 5:
+                                                            _var_var_11.qi_env_dict_op[_var_var_13] = { }
+                                                            for _var_var_15, _var_var_16 in list(_var_var_14.items()):
+                                                                if _var_var_15 != 'G':
+                                                                    _var_var_11.qi_env_dict_op[_var_var_13][_var_var_15] = self.SCal_dict['surf'][_var_var_15]['GSR'] * _var_var_16[0] * _var_var_16[2] * _var_var_16[3] * self.rse - _var_var_16[1] * self.rse * _var_var_16[2] * _var_var_16[0] * _var_var_16[-1] * (self.Te - self.T_er)
+                                                                    continue
+                                                                    if np.count_nonzero(np.array(list(_var_var_11.qi_env_dict_op[_var_var_13].values()))) == 0:
+                                                                        del _var_var_11.qi_env_dict_op[_var_var_13]
+                                                                        continue
+                                                                        _var_var_11.q_sol_op = None(np.sum((lambda .0: [ np.sum(np.array(list(_var_var_20.values())), 0, **('axis',)) for _var_var_13, _var_var_20 in .0 if np.array(list(zone.Envelopes.__dict__[_var_var_13].values())).shape[1] == 5 ])(list(_var_var_11.qi_env_dict_op.items()))), 0, **('axis',)) / _var_var_11.Af
+                                                                        _var_var_11.q_sol_w_rfl = None(np.sum((lambda .0: [ np.sum(np.array(list(_var_var_20['reflection'].values())), 0, **('axis',)) for _var_var_13, _var_var_20 in .0 if np.array(list(zone.Envelopes.__dict__[_var_var_13].values())).shape[1] == 12 ])(list(_var_var_11.qi_env_dict_w.items()))), 0, **('axis',)) / _var_var_11.Af
+                                                                        _var_var_11.q_sol_w = np.where(self.Te > self.P_shading_threshold, np.sum(np.array((lambda .0: [ np.matmul(_var_var_21['gain'], _var_var_21['shading_SRF']) for _var_var_13, _var_var_21 in .0 ])(list(_var_var_11.qi_env_dict_w.items()))), 0, **('axis',)) / _var_var_11.Af - _var_var_11.q_sol_w_rfl, np.sum(np.array((lambda .0: [ np.sum(_var_var_21['gain'], 1, **('axis',)) for _var_var_13, _var_var_21 in .0 ])(list(_var_var_11.qi_env_dict_w.items()))), 0, **('axis',)) / _var_var_11.Af - _var_var_11.q_sol_w_rfl)
+                                                                        _var_var_11.q_sol = _var_var_11.q_sol_w + _var_var_11.q_sol_op
+                                                                        continue
+                                                                        for None in list(self.pre_dict['Zones'].items()):
+                                                                            (_var_var_12, _var_var_11) = None
+                                                                            if hasattr(self.pre_dict['Zones'][_var_var_12], 'Solar'):
+                                                                                _var_var_11.q_sol = self.pre_dict['Zones'][_var_var_12].Solar
+                                                                                _var_var_11.q_sol_w = _var_var_11.q_sol * self.pre_dict['Zones'][_var_var_12].AreaFrac
+                                                                                _var_var_11.q_sol_op = _var_var_11.q_sol - _var_var_11.q_sol_w
+                                                                        '__pyarmor_exit_47090__(...)'
+                                                                        return None
+
+
+            
+            def otherHeatGain(self):
+                '__pyarmor_enter_47092__(...)'
+                
+                try:
+                    _var_var_22 = 0
+                    for _var_var_22 in list(self.pre_dict['Zones'].items()):
+                        (_var_var_12, _var_var_11) = None
+                        _var_var_11.Htr_is = 3.2 * self.At
+                        _var_var_11.Htr_w = sum((lambda .0: [ np.sum(np.array(list(_var_var_28.values()))[(:, 0)] * np.array(list(_var_var_28.values()))[(:, 6)]) for _var_var_27, _var_var_28 in .0 if len(np.transpose(np.array(list(_var_var_28.values())))) == 12 ])(list(_var_var_11.Envelopes.__dict__.items())))
+                        _var_var_11.Htr_op = sum((lambda .0: [ np.sum(np.array(list(_var_var_28.values()))[(:, 0)] * np.array(list(_var_var_28.values()))[(:, 2)]) for _var_var_27, _var_var_28 in .0 if len(np.transpose(np.array(list(_var_var_28.values())))) == 5 ])(list(_var_var_11.Envelopes.__dict__.items())))
+                        _var_var_11.Htr_ms = 9 * self.Am
+                        _var_var_11.Htr_em = 1 / (1 / _var_var_11.Htr_op / _var_var_11.Af - 1 / _var_var_11.Htr_ms)
+                        _var_var_11.prs = 1 - self.Am / self.At - _var_var_11.Htr_w / _var_var_11.Af / (9.1 * self.At)
+                        _var_var_11.prm = self.Am / self.At
+                        _var_var_11.ground_U = sum((lambda .0: [ sum(np.array(list(_var_var_28.values()))[(:, 1)]) * sum(np.array(list(_var_var_28.values()))[(:, 0)]) for _var_var_27, _var_var_28 in .0 if len(np.transpose(np.array(list(_var_var_28.values())))) == 2 ])(list(_var_var_11.Envelopes.__dict__.items()))) / _var_var_11.Af
+                        _var_var_11.qi_occ = _var_var_11.occupancy_frac * _var_var_11.occupant_load
+                        _var_var_11.qi_app = _var_var_11.equipment_frac * _var_var_11.appliance_load
+                        _var_var_11.qi_li = _var_var_11.light_frac * _var_var_11.lighting_load + _var_var_11.Lightings.P_pc
+                        _var_var_11.q_int = _var_var_11.qi_occ + _var_var_11.qi_app + _var_var_11.qi_li
+                        _var_var_11.qv_supp_fctrl = _var_var_11.Ventilation.supply * _var_var_11.Ventilation.MV_sched
+                        _var_var_11.qv_exh = _var_var_11.qv_supp_fctrl
+                        _var_var_11.qv_diff = _var_var_11.qv_supp_fctrl - _var_var_11.qv_exh
+                        _var_var_11.qv_supp = _var_var_11.qv_supp_fctrl * (1 - _var_var_11.Ventilation.HR_eff)
+                        _var_var_11.q_ia = 0.5 * _var_var_11.q_int
+                        _var_var_11.deltaT_water_H = _var_var_11.HVAC.T_Swater_H - _var_var_11.HVAC.T_Rwater_H if _var_var_11.HVAC.T_Swater_H != 0 and _var_var_11.HVAC.T_Rwater_H != 0 else 11
+                        _var_var_11.deltaT_water_C = _var_var_11.HVAC.T_Rwater_C - _var_var_11.HVAC.T_Swater_C if _var_var_11.HVAC.T_Swater_C != 0 and _var_var_11.HVAC.T_Rwater_C != 0 else 5
+                        _var_var_11.q_m = _var_var_11.prm * (0.5 * _var_var_11.q_int + _var_var_11.q_sol)
+                        _var_var_11.q_st = _var_var_11.prs * (0.5 * _var_var_11.q_int + _var_var_11.q_sol)
+                    _var_var_22 = _var_var_22 / self.General.building_area
+                    self.Htr_gr = _var_var_22
+                    for None in list(self.pre_dict['Zones'].items()):
+                        (_var_var_12, _var_var_11) = None
+                        _var_var_11.Htr_iw = None + None((lambda .0: [ zone.U_iw * _var_var_24 for _var_var_23, _var_var_24 in .0 ])(list(_var_var_11.adj_wall_zone.items()))) / _var_var_11.Af((lambda .0: [ zone.U_if * _var_var_24 for _var_var_23, _var_var_24 in .0 ])(list(_var_var_11.adj_ceiling_zone.items()))) / _var_var_11.Af
+                        _var_var_11.Htr_if = 0
+                        for _var_var_23, _var_var_24 in list(_var_var_11.adj_floor_zone.items()):
+                            pass
+                        _var_var_11.Htr_if = _var_var_11.Htr_if / _var_var_11.Af
+                    _var_var_25 = copy.deepcopy(self.wea_dict['month']).astype(np.float64)
+                    for _var_var_26 in range(len(_var_var_25)):
+                        _var_var_25[_var_var_26] = self.General.ground_temperature[int(_var_var_25[_var_var_26]) - 1]
+                    self.T_gr = np.array(_var_var_25)
+                finally:
+                    '__pyarmor_exit_47093__(...)'
+                return None
+
+
+            
+            def beforeIterate(self):
+                '__pyarmor_enter_47095__(...)'
+                
+                try:
+                    for _var_var_12, _var_var_11 in list(self.pre_dict['Zones'].items()):
+                        _var_var_11.T_m_t_1_hc = _var_var_11.T_m_t_hc
+                        _var_var_11.T_m_t_1_un = _var_var_11.T_m_t_hc
+                        _var_var_11.T_m_t_1_0 = _var_var_11.T_m_t_hc
+                finally:
+                    '__pyarmor_exit_47096__(...)'
+                return None
+
+
+            
+            def initiate(self):
+                '__pyarmor_enter_47098__(...)'
+                
+                try:
+                    if hasattr(self, 'if_print') and self.if_print == True:
+                        print('Initiating simulation...')
+                    for _var_var_12, _var_var_11 in list(self.pre_dict['Zones'].items()):
+                        _var_var_11.T_m_t_hc = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_m_t_hc[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.T_m_t_1_hc = np.zeros(len(self.Te))
+                        _var_var_11.T_m_t_0 = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_m_t_0[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.T_m_t_1_0 = np.zeros(len(self.Te))
+                        _var_var_11.T_m_t_un = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_m_t_un[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.T_m_t_1_un = np.zeros(len(self.Te))
+                        _var_var_11.q_m_tot_0 = np.zeros(len(self.Te))
+                        _var_var_11.q_m_tot_un = np.zeros(len(self.Te))
+                        _var_var_11.q_m_tot_hc = np.zeros(len(self.Te))
+                        _var_var_11.q_a_tot_0 = np.zeros(len(self.Te))
+                        _var_var_11.q_a_tot_un = np.zeros(len(self.Te))
+                        _var_var_11.q_a_tot_hc = np.zeros(len(self.Te))
+                        _var_var_11.T_op_0 = np.zeros(len(self.Te))
+                        _var_var_11.T_op_un = np.zeros(len(self.Te))
+                        _var_var_11.T_op_hc = np.zeros(len(self.Te))
+                        _var_var_11.T_m_hc = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_m_0 = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_m_un = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_s_hc = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_s_0 = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_s_un = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_air_hc = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_air_hc[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.T_air_set = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_air_set[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.T_air_un = np.zeros(len(self.Te) + 1)
+                        _var_var_11.T_air_un[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.free_float_T = np.zeros(len(self.Te) + 1)
+                        _var_var_11.free_float_T[0] = _var_var_11.T_set_H[0]
+                        _var_var_11.Hve = np.zeros(len(self.Te))
+                        _var_var_11.H1 = np.zeros(len(self.Te))
+                        _var_var_11.H2 = np.zeros(len(self.Te))
+                        _var_var_11.H3 = np.zeros(len(self.Te))
+                        _var_var_11.qv_stack = np.zeros(len(self.Te))
+                        _var_var_11.qv_infred = np.zeros(len(self.Te))
+                        _var_var_11.qv_inf = np.zeros(len(self.Te))
+                        _var_var_11.qv_wind = np.zeros(len(self.Te))
+                        _var_var_11.qv_sw = np.zeros(len(self.Te))
+                        _var_var_11.V = np.zeros(len(self.Te))
+                        _var_var_11.Ywind = np.zeros(len(self.Te))
+                        _var_var_11.Ytemp = np.zeros(len(self.Te))
+                        _var_var_11.Ropw = np.zeros(len(self.Te))
+                        _var_var_11.qv_airing = np.zeros(len(self.Te))
+                        _var_var_11.NV_hrs = np.zeros(len(self.Te))
+                        _var_var_11.qv_NV = np.zeros(len(self.Te))
+                        _var_var_11.qv_NV_calc = np.zeros(len(self.Te))
+                        _var_var_11.qv_tot = np.zeros(len(self.Te))
+                        _var_var_11.inf_ACH = np.zeros(len(self.Te))
+                        _var_var_11.mech_ACH = np.zeros(len(self.Te))
+                        _var_var_11.NV_ACH = np.zeros(len(self.Te))
+                        _var_var_11.q_es = np.zeros(len(self.Te))
+                        _var_var_11.q_em = np.zeros(len(self.Te))
+                        _var_var_11.T_es = np.zeros(len(self.Te))
+                        _var_var_11.T_em = np.zeros(len(self.Te))
+                        _var_var_11.q_hc = np.zeros(len(self.Te))
+                        _var_var_11.q_C_nd = np.zeros(len(self.Te) + 1)
+                        _var_var_11.q_C_nd[0] = 0
+                        _var_var_11.q_H_nd = np.zeros(len(self.Te))
+                        _var_var_11.q_NV_ac = np.zeros(len(self.Te))
+                        _var_var_11.T_supp = np.zeros(len(self.Te))
+                        _var_var_11.q_inf = np.zeros(len(self.Te))
+                        _var_var_11.q_NV = np.zeros(len(self.Te))
+                finally:
+                    '__pyarmor_exit_47099__(...)'
+                return None
+
+
+            
+            def iterate(self):
+                '__pyarmor_enter_47101__(...)'
+                
+                try:
+                    _var_var_35 = len(self.Te)
+                    print_progress_bar.start_time = time.time()
+                    _var_var_36 = self.solver.lower()
+                    if _var_var_36 == 'crank-nicholson':
+                        
+                        def _var_var_32(T_prev, A, B, C):
+                            '__pyarmor_enter_47104__(...)'
+                            
+                            try:
+                                pass
+                            finally:
+                                '__pyarmor_exit_47105__(...)'
+                                return None
+                                '__pyarmor_exit_47105__(...)'
+                                return None
+
+
+                    elif _var_var_36 == 'euler':
+                        
+                        def _var_var_32(T_prev, A, B, C):
+                            '__pyarmor_enter_47107__(...)'
+                            
+                            try:
+                                pass
+                            finally:
+                                '__pyarmor_exit_47108__(...)'
+                                return None
+                                '__pyarmor_exit_47108__(...)'
+                                return None
+
+
+                    elif _var_var_36 == 'runge-kutta':
+                        
+                        def _var_var_32(T_prev, A, B, C):
+                            '__pyarmor_enter_47110__(...)'
+                            
+                            try:
+                                pass
+                            finally:
+                                '__pyarmor_exit_47111__(...)'
+                                return None
+                                '__pyarmor_exit_47111__(...)'
+                                return None
+
+
+                    else:
+                        
+                        def _var_var_32(T_prev, A, B, C):
+                            '__pyarmor_enter_47113__(...)'
+                            
+                            try:
+                                pass
+                            finally:
+                                '__pyarmor_exit_47114__(...)'
+                                return None
+                                '__pyarmor_exit_47114__(...)'
+                                return None
+
+
+                    
+                    def _var_var_37(zone, i, Te_i):
+                        '__pyarmor_enter_47116__(...)'
+                        
+                        try:
+                            zone.q_m_tot_hc[i] = zone.q_m[i] + zone.q_em[i] + zone.H3[i] * (zone.q_st[i] + zone.q_es[i] + zone.H1[i] * ((zone.q_ia[i] + zone.q_hc[i]) / zone.Hve[i] + Te_i)) / zone.H2[i]
+                            _var_var_99 = Cm
+                            _var_var_100 = zone.H3[i] + zone.Htr_em + zone.Htr_if
+                            zone.T_m_t_hc[i + 1] = _solve(zone.T_m_t_1_hc[i], _var_var_99, _var_var_100, zone.q_m_tot_hc[i])
+                            zone.T_m_hc[i] = (zone.T_m_t_1_hc[i] + zone.T_m_t_hc[i + 1]) / 2
+                            zone.T_s_hc[i] = (zone.Htr_ms * zone.T_m_hc[i] + zone.q_st[i] + zone.q_es[i] + zone.H1[i] * (Te_i + (zone.q_ia[i] + zone.q_hc[i]) / zone.Hve[i])) / (zone.Htr_ms + zone.Htr_w / zone.Af + zone.H1[i] + zone.Htr_iw)
+                            if order == 2:
+                                _var_var_95 = zone.Htr_is * zone.T_s_hc[i] + zone.Hve[i] * Te_i + zone.q_ia[i] + zone.q_hc[i]
+                                zone.q_a_tot_hc[i] = _var_var_95
+                                zone.T_air_hc[i + 1] = _solve(zone.T_air_hc[i], self.Ct, zone.Htr_is + zone.Hve[i], _var_var_95)
+                            else:
+                                zone.T_air_hc[i + 1] = (zone.Htr_is * zone.T_s_hc[i] + zone.Hve[i] * Te_i + zone.q_ia[i] + zone.q_hc[i]) / (zone.Htr_is + zone.Hve[i])
+                            zone.T_op_hc[i] = 0.3 * zone.T_air_hc[i + 1] + 0.7 * zone.T_s_hc[i]
+                        finally:
+                            '__pyarmor_exit_47117__(...)'
+                        return None
+
+
+                    _var_var_38 = list(self.pre_dict['Zones'].items())
+                    _var_var_39 = self.Te
+                    _var_var_40 = self.ws
+                    _var_var_41 = self.T_gr
+                    _var_var_29 = self.Cm
+                    _var_var_33 = self.order
+                    _var_var_30 = self.Htr_gr
+                    _var_var_34 = self.pre_dict['Zones']
+                    _var_var_42 = self.General.HVAC_dct
+                    if hasattr(self, 'if_print'):
+                        pass
+                    _var_var_43 = self.if_print
+                    _var_var_44 = hasattr(self, 'infl_style')
+                    _var_var_45 = getattr(self, 'infl_style', None)
+                    _var_var_46 = { }
+                    for None in _var_var_38:
+                        (_var_var_12, _var_var_11) = None
+                        _var_var_46[_var_var_12] = (list(_var_var_11.adj_wall_zone.items()), list(_var_var_11.adj_ceiling_zone.items()), list(_var_var_11.adj_floor_zone.items()))
+                    for _var_var_47 in range(_var_var_35):
+                        _var_var_26 = None
+                        if _var_var_43:
+                            if _var_var_26 % 1000 == 0:
+                                print_progress_bar(_var_var_26, _var_var_35)
+                            if _var_var_26 == _var_var_35 - 1:
+                                print_progress_bar(_var_var_35, _var_var_35)
+                        _var_var_48 = _var_var_40[_var_var_26]
+                        _var_var_31 = _var_var_41[_var_var_26]
+                        _var_var_49 = (lambda .0: pass# WARNING: Decompyle incomplete
+)(_var_var_42)
+                        for _var_var_50, _var_var_51, _var_var_52 in _var_var_38:
+                            (_var_var_12, _var_var_11) = None
+                            if _var_var_11.Q4Pa != 0:
+                                if _var_var_44:
+                                    if _var_var_45 == 'real':
+                                        _var_var_53 = _var_var_11.T_air_set[_var_var_26]
+                                        _var_var_54 = _var_var_11.infiltration_frac[_var_var_26]
+                                        _var_var_55 = _var_var_11.Ventilation.flow_rate
+                                        _var_var_56 = max(0.0146 * _var_var_55 * _var_var_54 * (0.7 * _var_var_11.height * abs(_var_var_47 - _var_var_53)) ** 0.667, 0.001)
+                                        _var_var_11.qv_stack[_var_var_26] = _var_var_56
+                                        _var_var_57 = 0.0769 * _var_var_55 * _var_var_54 * (_var_var_11.Ventilation.dCP * _var_var_11.Ventilation.vsite * _var_var_48 ** 2) ** 0.667
+                                        _var_var_11.qv_wind[_var_var_26] = _var_var_57
+                                        _var_var_58 = max(_var_var_56, _var_var_57) + 0.14 * _var_var_56 * _var_var_57 / (_var_var_55 * _var_var_54)
+                                        _var_var_11.qv_sw[_var_var_26] = _var_var_58
+                                        _var_var_59 = _var_var_11.qv_diff[_var_var_26]
+                                        _var_var_11.qv_infred[_var_var_26] = max(_var_var_58, (_var_var_56 * abs(_var_var_59) / 2 + _var_var_57 * abs(_var_var_59) * 2 / 3) / (_var_var_56 + _var_var_57))
+                                        _var_var_11.qv_inf[_var_var_26] = max(0, -_var_var_59) + _var_var_58
+                                    elif _var_var_45 == 'constant':
+                                        _var_var_11.qv_inf[_var_var_26] = _var_var_11.Ventilation.flow_rate * _var_var_11.infiltration_frac[_var_var_26]
+                                    else:
+                                        raise ValueError
+                                else:
+                                    _var_var_11.qv_inf[_var_var_26] = _var_var_11.Ventilation.flow_rate * _var_var_11.infiltration_frac[_var_var_26]
+                            if _var_var_11.vent_type != 1:
+                                _var_var_53 = _var_var_11.T_air_set[_var_var_26]
+                                _var_var_60 = 0.01 + 0.001 * _var_var_48 ** 2 + 0.0035 * _var_var_11.Ventilation.height * abs(_var_var_53 - _var_var_47)
+                                _var_var_11.V[_var_var_26] = _var_var_60
+                                _var_var_61 = 1 - 0.1 * _var_var_48
+                                if _var_var_61 > 1:
+                                    pass
+                                elif _var_var_61 < 0:
+                                    pass
+                                
+                                _var_var_62 = _var_var_61
+                                _var_var_63 = _var_var_47 / 25 + 0.2
+                                if _var_var_63 > 1:
+                                    pass
+                                elif _var_var_63 < 0:
+                                    pass
+                                
+                                _var_var_64 = _var_var_63
+                                _var_var_11.Ywind[_var_var_26] = _var_var_62
+                                _var_var_11.Ytemp[_var_var_26] = _var_var_64
+                                _var_var_65 = _var_var_62 * _var_var_64
+                                _var_var_11.Ropw[_var_var_26] = _var_var_65
+                                _var_var_66 = _var_var_65 * 1800 * _var_var_11.Ventilation.Aow * _var_var_60 ** 0.5 / _var_var_11.Af
+                                _var_var_11.qv_airing[_var_var_26] = _var_var_66
+                                _var_var_67 = _var_var_11.vent_type
+                                if _var_var_67 == 3:
+                                    _var_var_11.NV_hrs[_var_var_26] = 1
+                                    _var_var_11.qv_NV[_var_var_26] = _var_var_66
+                                elif _var_var_67 == 2:
+                                    _var_var_11.NV_hrs[_var_var_26] = 1 if _var_var_11.q_C_nd[_var_var_26] > 0 and _var_var_47 < _var_var_53 and _var_var_47 > 16 else 0
+                                else:
+                                    _var_var_11.NV_hrs[_var_var_26] = 0
+                                _var_var_11.qv_NV_calc[_var_var_26] = _var_var_66 if _var_var_11.NV_hrs[_var_var_26] == 1 else 0
+                            _var_var_11.qv_tot[_var_var_26] = _var_var_11.qv_supp[_var_var_26] + _var_var_11.qv_inf[_var_var_26] + _var_var_11.qv_NV_calc[_var_var_26]
+                            _var_var_68 = 0.333333 * _var_var_11.qv_tot[_var_var_26]
+                            _var_var_69 = 1 / (1 / _var_var_11.Htr_is + 1 / _var_var_68)
+                            _var_var_70 = _var_var_69 + _var_var_11.Htr_w / _var_var_11.Af + _var_var_11.Htr_iw
+                            _var_var_71 = 1 / (1 / _var_var_70 + 1 / _var_var_11.Htr_ms)
+                            _var_var_11.Hve[_var_var_26] = _var_var_68
+                            _var_var_11.H1[_var_var_26] = _var_var_69
+                            _var_var_11.H2[_var_var_26] = _var_var_70
+                            _var_var_11.H3[_var_var_26] = _var_var_71
+                            if _var_var_11.Htr_w + _var_var_11.Htr_iw * _var_var_11.Af == 0:
+                                _var_var_11.q_es[_var_var_26] = 0
+                            else:
+                                _var_var_11.q_es[_var_var_26] = None + None((lambda .0: for _var_var_101, _var_var_102 in .0:
+pre_zones[_var_var_101].T_air_hc[i] * zone.U_if * _var_var_102 / zone.Af)(_var_var_51))
+                            _var_var_72 = (lambda .0: for _var_var_101, _var_var_102 in .0:
+passcontinueT_gr_i * Htr_gr * _var_var_102 / zone.Af[pre_zones[_var_var_101].T_air_hc[i] * zone.U_if * _var_var_102 / zone.Af])(_var_var_52)
+                            _var_var_11.q_em[_var_var_26] = _var_var_11.Htr_em * _var_var_47 + sum(_var_var_72)
+                            _var_var_73 = _var_var_11.q_m[_var_var_26]
+                            _var_var_74 = _var_var_11.q_em[_var_var_26]
+                            _var_var_75 = _var_var_11.q_st[_var_var_26]
+                            _var_var_76 = _var_var_11.q_es[_var_var_26]
+                            _var_var_77 = _var_var_11.q_ia[_var_var_26]
+                            _var_var_78 = _var_var_11.Htr_em
+                            _var_var_79 = _var_var_11.Htr_if
+                            _var_var_80 = _var_var_11.Htr_ms
+                            _var_var_81 = _var_var_11.Htr_iw
+                            _var_var_82 = _var_var_11.Htr_w / _var_var_11.Af
+                            _var_var_83 = _var_var_71 + _var_var_78 + _var_var_79
+                            _var_var_84 = _var_var_11.Htr_is
+                            _var_var_85 = _var_var_73 + _var_var_74 + _var_var_71 * (_var_var_75 + _var_var_76 + _var_var_69 * (_var_var_77 / _var_var_68 + _var_var_47)) / _var_var_70
+                            _var_var_11.q_m_tot_0[_var_var_26] = _var_var_85
+                            _var_var_11.T_m_t_0[_var_var_26 + 1] = _var_var_32(_var_var_11.T_m_t_1_0[_var_var_26], _var_var_29, _var_var_83, _var_var_85)
+                            _var_var_11.T_m_0[_var_var_26] = (_var_var_11.T_m_t_1_0[_var_var_26] + _var_var_11.T_m_t_0[_var_var_26 + 1]) / 2
+                            _var_var_11.T_s_0[_var_var_26] = (_var_var_80 * _var_var_11.T_m_0[_var_var_26] + _var_var_75 + _var_var_76 + _var_var_69 * (_var_var_47 + _var_var_77 / _var_var_68)) / (_var_var_80 + _var_var_82 + _var_var_69 + _var_var_81)
+                            if _var_var_33 == 2:
+                                _var_var_86 = _var_var_84 * _var_var_11.T_s_0[_var_var_26] + _var_var_68 * _var_var_47 + _var_var_77
+                                _var_var_11.q_a_tot_0[_var_var_26] = _var_var_86
+                                _var_var_11.free_float_T[_var_var_26 + 1] = _var_var_32(_var_var_11.free_float_T[_var_var_26], self.Ct, _var_var_84 + _var_var_68, _var_var_86)
+                            else:
+                                _var_var_11.free_float_T[_var_var_26 + 1] = (_var_var_84 * _var_var_11.T_s_0[_var_var_26] + _var_var_68 * _var_var_47 + _var_var_77) / (_var_var_84 + _var_var_68)
+                            _var_var_11.T_op_0[_var_var_26] = 0.3 * _var_var_11.free_float_T[_var_var_26] + 0.7 * _var_var_11.T_s_0[_var_var_26]
+                            _var_var_87 = _var_var_11.free_float_T[_var_var_26 + 1]
+                            _var_var_88 = _var_var_11.T_set_H[_var_var_26]
+                            _var_var_89 = _var_var_11.T_set_C[_var_var_26]
+                            if _var_var_87 < _var_var_88:
+                                pass
+                            elif _var_var_87 > _var_var_89:
+                                pass
+                            
+                            _var_var_11.T_air_set[_var_var_26 + 1] = _var_var_87
+                            _var_var_90 = _var_var_73 + _var_var_74 + _var_var_71 * (_var_var_75 + _var_var_76 + _var_var_69 * ((_var_var_77 + 10) / _var_var_68 + _var_var_47)) / _var_var_70
+                            _var_var_11.q_m_tot_un[_var_var_26] = _var_var_90
+                            _var_var_11.T_m_t_un[_var_var_26 + 1] = _var_var_32(_var_var_11.T_m_t_1_un[_var_var_26], _var_var_29, _var_var_83, _var_var_90)
+                            _var_var_11.T_m_un[_var_var_26] = (_var_var_11.T_m_t_1_un[_var_var_26] + _var_var_11.T_m_t_un[_var_var_26 + 1]) / 2
+                            _var_var_11.T_s_un[_var_var_26] = (_var_var_80 * _var_var_11.T_m_un[_var_var_26] + _var_var_75 + _var_var_76 + _var_var_69 * (_var_var_47 + (_var_var_77 + 10) / _var_var_68)) / (_var_var_80 + _var_var_82 + _var_var_69 + _var_var_81)
+                            _var_var_11.T_op_un[_var_var_26] = 0.3 * _var_var_11.T_air_un[_var_var_26] + 0.7 * _var_var_11.T_s_un[_var_var_26]
+                            _var_var_92 = _var_var_11.T_air_set[_var_var_26 + 1]
+                            _var_var_93 = _var_var_11.T_air_un[_var_var_26 + 1]
+                            _var_var_94 = _var_var_73 + _var_var_74 + _var_var_71 * (_var_var_75 + _var_var_76 + _var_var_69 * ((_var_var_77 + _var_var_11.q_hc[_var_var_26]) / _var_var_68 + _var_var_47)) / _var_var_70
+                            _var_var_11.q_m_tot_hc[_var_var_26] = _var_var_94
+                            _var_var_11.T_m_t_hc[_var_var_26 + 1] = _var_var_32(_var_var_11.T_m_t_1_hc[_var_var_26], _var_var_29, _var_var_83, _var_var_94)
+                            _var_var_11.T_m_hc[_var_var_26] = (_var_var_11.T_m_t_1_hc[_var_var_26] + _var_var_11.T_m_t_hc[_var_var_26 + 1]) / 2
+                            _var_var_11.T_s_hc[_var_var_26] = (_var_var_80 * _var_var_11.T_m_hc[_var_var_26] + _var_var_75 + _var_var_76 + _var_var_69 * (_var_var_47 + (_var_var_77 + _var_var_11.q_hc[_var_var_26]) / _var_var_68)) / (_var_var_80 + _var_var_82 + _var_var_69 + _var_var_81)
+                            _var_var_11.T_op_hc[_var_var_26] = 0.3 * _var_var_11.T_air_hc[_var_var_26 + 1] + 0.7 * _var_var_11.T_s_hc[_var_var_26]
+                        for _var_var_96, _var_var_97 in _var_var_49.items():
+                            _var_var_98 = _var_var_34[_var_var_42[_var_var_96][0]]
+                            if _var_var_97[0] > _var_var_98.HVAC.heat_cap:
+                                for _var_var_12 in _var_var_42[_var_var_96]:
+                                    _var_var_11 = _var_var_34[_var_var_12]
+                                    if _var_var_11.q_hc[_var_var_26] > 0:
+                                        _var_var_11.q_hc[_var_var_26] = (_var_var_11.q_hc[_var_var_26] / _var_var_97[0]) * _var_var_11.HVAC.heat_cap
+                                        _var_var_37(_var_var_11, _var_var_26, _var_var_47)
+                                        continue
+                                        if _var_var_97[1] > _var_var_98.HVAC.cool_cap:
+                                            for _var_var_12 in _var_var_42[_var_var_96]:
+                                                _var_var_11 = _var_var_34[_var_var_12]
+                                                if _var_var_11.q_hc[_var_var_26] < 0:
+                                                    _var_var_11.q_hc[_var_var_26] = (_var_var_11.q_hc[_var_var_26] / _var_var_97[1]) * _var_var_11.HVAC.cool_cap
+                                                    _var_var_37(_var_var_11, _var_var_26, _var_var_47)
+                                                    continue
+                                                    continue
+                                                '__pyarmor_exit_47102__(...)'
+                                            '__pyarmor_exit_47102__(...)'
+                                            return None
+
+
+            
+            def hourlyAggregate(self):
+                '__pyarmor_enter_47119__(...)'
+                
+                try:
+                    for _var_var_12, _var_var_11 in list(self.pre_dict['Zones'].items()):
+                        _var_var_11.q_hc *= _var_var_11.Af * 3600
+                        _var_var_11.q_H_nd *= _var_var_11.Af * 3600
+                        _var_var_11.q_C_nd = _var_var_11.q_C_nd[1:] * _var_var_11.Af * 3600
+                        _var_var_11.q_NV_ac = np.where(_var_var_11.NV_hrs == 0, 0, _var_var_11.q_C_nd)
+                        _var_var_11.T_air_hc = _var_var_11.T_air_hc[1:]
+                        _var_var_11.T_s_hc = _var_var_11.T_s_hc[1:]
+                        _var_var_11.qi_li *= _var_var_11.Af * 3600
+                        _var_var_11.qi_app *= _var_var_11.Af * 3600
+                        _var_var_11.q_sol_w *= _var_var_11.Af * 3600
+                        _var_var_11.q_sol *= _var_var_11.Af * 3600
+                        _var_var_11.q_sol_op *= _var_var_11.Af * 3600
+                        _var_var_11.q_inf = 0.333333 * _var_var_11.qv_inf * _var_var_11.Af * 3600
+                        _var_var_11.q_NV = 0.333333 * _var_var_11.qv_NV * _var_var_11.Af * 3600
+                finally:
+                    '__pyarmor_exit_47120__(...)'
+                return None
+
+
+            
+            def energy(self):
+                '__pyarmor_enter_47122__(...)'
+                
+                try:
+                    self.Af = 0
+                    for _var_var_12, _var_var_11 in list(self.pre_dict['Zones'].items()):
+                        _var_var_11.heat_supply_air = (_var_var_11.q_H_nd / (_var_var_11.Af * 3600) / 1000) * 3.6 / (_var_var_11.Fans.T_supply_H - _var_var_11.T_air_hc) / _var_var_11.Fans.rho
+                        _var_var_11.cool_supply_air = (_var_var_11.q_C_nd / (_var_var_11.Af * 3600) / 1000) * 3.6 / (_var_var_11.T_air_hc - (_var_var_11.Fans.T_supply_C + _var_var_11.HVAC.reheat_deltaT)) / _var_var_11.Fans.rho
+                        if _var_var_11.HVAC.reheat_summer == 1:
+                            _var_var_11.rh_threshold_summer = 25 if _var_var_11.HVAC.reheat_summer == 1 else 100
+                            _var_var_11.q_C_nd_HVAC = np.where(self.rh > _var_var_11.rh_threshold_summer, ((_var_var_11.T_air_hc - _var_var_11.Fans.T_supply_C) * _var_var_11.cool_supply_air * _var_var_11.Fans.rho * 1000 / 3.6) * _var_var_11.Af * 3600, _var_var_11.q_C_nd)
+                            _var_var_11.q_H_nd_HVAC = np.where(_var_var_11.q_hc > 0, _var_var_11.q_H_nd, np.where(self.rh > _var_var_11.rh_threshold_summer, (_var_var_11.HVAC.reheat_deltaT * _var_var_11.cool_supply_air * _var_var_11.Fans.rho * 1000 / 3.6) * _var_var_11.Af * 3600, _var_var_11.q_H_nd))
+                        else:
+                            _var_var_11.q_C_nd_HVAC = _var_var_11.q_C_nd
+                            _var_var_11.q_H_nd_HVAC = _var_var_11.q_H_nd
+                        _var_var_11.fresh_air = _var_var_11.qv_tot
+                        _var_var_11.fan_volume = np.maximum(_var_var_11.heat_supply_air, _var_var_11.cool_supply_air) + _var_var_11.qv_exh
+                        _var_var_11.fan_volume *= 1.2 * _var_var_11.Af / 3600
+                        _var_var_11.fan_energy = np.where(_var_var_11.fan_volume > 0, np.array([
+                            max(_var_var_11.fan_volume)] * len(self.Te)) * _var_var_11.Fans.fan_power * _var_var_11.Fans.fan_flow_control_factor * self.BEM.f_BAC_e * 3600, 0)
+                        _var_var_11.heat_supply_water = _var_var_11.q_H_nd_HVAC / 1000000 / _var_var_11.deltaT_water_H / self.Pumps.rho if self.Pumps.pump_power_H != 0 else np.zeros(len(self.Te))
+                        _var_var_11.cool_supply_water = _var_var_11.q_C_nd_HVAC / 1000000 / _var_var_11.deltaT_water_C / self.Pumps.rho if self.Pumps.pump_power_C != 0 else np.zeros(len(self.Te))
+                        if self.Pumps.fcntrl == 0.5:
+                            _var_var_11.pump_volume_H = _var_var_11.heat_supply_water / 3600
+                            _var_var_11.pump_volume_C = _var_var_11.cool_supply_water / 3600
+                        elif self.Pumps.fcntrl == 1:
+                            _var_var_11.pump_volume_H = 0.8 * max(_var_var_11.heat_supply_water) / 3600
+                            _var_var_11.pump_volume_C = 0.8 * max(_var_var_11.cool_supply_water) / 3600
+                        else:
+                            _var_var_11.pump_volume_H = 0
+                            _var_var_11.pump_volume_C = 0
+                        _var_var_11.f_dem_heat = max(0.1, sum(_var_var_11.q_H_nd_HVAC) / (sum(_var_var_11.q_H_nd_HVAC) + sum(_var_var_11.q_C_nd_HVAC)))
+                        _var_var_11.f_dem_cool = max(1 - _var_var_11.f_dem_heat, 0.1)
+                        _var_var_11.dist_cool = 1 / (1 + _var_var_11.HVAC.a_cool + _var_var_11.HVAC.f_waste / _var_var_11.f_dem_cool)
+                        _var_var_11.dist_heat = 1 / (1 + _var_var_11.HVAC.a_heat + _var_var_11.HVAC.f_waste / _var_var_11.f_dem_heat)
+                        _var_var_11.heating_efficiency = np.interp(_var_var_11.q_H_nd_HVAC / max(_var_var_11.q_H_nd_HVAC), _var_var_11.HVAC.PLV_x, _var_var_11.HVAC.heating_PLV * _var_var_11.HVAC.heating_efficiency) if max(_var_var_11.q_H_nd_HVAC) != 0 else 0
+                        _var_var_11.cooling_COP = np.interp(_var_var_11.q_C_nd_HVAC / max(_var_var_11.q_C_nd_HVAC), _var_var_11.HVAC.PLV_x, _var_var_11.HVAC.cooling_PLV * _var_var_11.HVAC.cooling_COP) if max(_var_var_11.q_C_nd_HVAC) != 0 else 0
+                        _var_var_11.heat_loss = _var_var_11.q_H_nd_HVAC * (1 - _var_var_11.dist_heat) / _var_var_11.dist_heat
+                        _var_var_11.heat_energy = np.where(_var_var_11.heating_efficiency == 0, np.zeros(len(self.Te)), (_var_var_11.q_H_nd_HVAC + _var_var_11.heat_loss) * self.BEM.f_BAC_hc / _var_var_11.heating_efficiency)
+                        _var_var_11.cool_loss = _var_var_11.q_C_nd_HVAC * (1 - _var_var_11.dist_cool) / _var_var_11.dist_cool
+                        _var_var_11.cool_energy = np.where(_var_var_11.cooling_COP == 0, np.zeros(len(self.Te)), (_var_var_11.q_C_nd_HVAC + _var_var_11.cool_loss) * self.BEM.f_BAC_hc / _var_var_11.cooling_COP)
+                        _var_var_11.qi_equip = _var_var_11.qi_app
+                        _var_var_11.DHW_q = 12 * _var_var_11.DHW * 4.18 * 1000 * 45 * _var_var_11.Af
+                        if hasattr(self, 'DHW_style'):
+                            if self.DHW_style == 'avg':
+                                _var_var_11.DHW_dem = np.array([
+                                    _var_var_11.DHW_q / len(self.Te)] * len(self.Te))
+                            elif self.DHW_style == 'occ':
+                                _var_var_11.DHW_dem = _var_var_11.DHW_q * _var_var_11.occupancy_frac / sum(_var_var_11.occupancy_frac) if sum(_var_var_11.occupancy_frac) != 0 else np.zeros(len(self.Te))
+                            elif sum(_var_var_11.occupancy_frac) != 0:
+                                pass
+                            
+                            _var_var_11.DHW_dem = np.zeros(len(self.Te))
+                        elif sum(_var_var_11.occupancy_frac) != 0:
+                            pass
+                        
+                        _var_var_11.DHW_dem = np.zeros(len(self.Te))
+                        self.Af += _var_var_11.Af if np.count_nonzero(_var_var_11.q_hc) > 0 else 0
+                    _var_var_103 = self.wea_dict['pressure'] / self.Wind_Turbines.R_air / (273 + self.Te)
+                    self.Egen_wind = 0.5 * _var_var_103 * self.Wind_Turbines.Multiplier * self.Wind_Turbines.Swept_Area * self.Wind_Turbines.Efficiency * self.ws ** 3 * 3600
+                finally:
+                    '__pyarmor_exit_47123__(...)'
+                return None
+
+
+            
+            def renewables(self):
+                '__pyarmor_enter_47125__(...)'
+                
+                try:
+                    
+                    try:
+                        int(self.PV.PV_Area)
+                    finally:
+                        pass
+                    self.Esol_PV = np.zeros(len(self.Te))
+                    if int(self.PV.PV_Area) != 0:
+                        
+                        try:
+                            int(self.PV.PV_Angle)
+                        finally:
+                            pass
+                        self.Esol_PV = np.zeros(len(self.Te))
+                        if int(self.PV.PV_Angle) == 0:
+                            self.Esol_PV = self.wea_dict['Egh'] / 1000
+                        else:
+                            self.Esol_PV = self.SCal_dict['Esol'][int(self.PV.PV_Angle)][self.PV.Orientation] / 1000
+
+
+                    self.Esol_PV = np.zeros(len(self.Te))
+                    self.Egen_PV = self.Esol_PV * self.PV.Ppk * self.PV.fperf * 3600000
+                    
+                    try:
+                        int(self.DHW.SWH_Area)
+                    finally:
+                        pass
+                    self.Esol_SWH = np.zeros(len(self.Te))
+                    if int(self.DHW.SWH_Area) != 0:
+                        
+                        try:
+                            int(self.DHW.SWH_Angle)
+                        finally:
+                            pass
+                        self.Esol_PV = np.zeros(len(self.Te))
+                        if int(self.DHW.SWH_Angle) == 0:
+                            self.Esol_SWH = self.wea_dict['Egh'] / 1000
+                        else:
+                            self.Esol_SWH = self.SCal_dict['Esol'][int(self.DHW.SWH_Angle)][self.DHW.SWH_Orientation] / 1000
+
+
+                    self.Esol_SWH = np.zeros(len(self.Te))
+                    self.Esol_SWH *= 3600000
+                finally:
+                    '__pyarmor_exit_47126__(...)'
+                return None
+
+
+            
+            def aggregate(self):
+                '__pyarmor_enter_47128__(...)'
+                
+                try:
+                    if hasattr(self, 'if_print') and self.if_print == True:
+                        print('Processing simulation results...')
+                    _var_var_104 = collections.OrderedDict({
+                        'indoor_temperature': { },
+                        'q_sol_w': { },
+                        'q_sol_op': { },
+                        'q_inf': { },
+                        'q_NV': { },
+                        'q_H_nd': { },
+                        'q_C_nd': { },
+                        'heat_energy': { },
+                        'cool_energy': { },
+                        'lighting_energy': { },
+                        'equipment_energy': { },
+                        'DHW_dem': { },
+                        'fan_energy': { },
+                        'occupants': { },
+                        'q_cond_wall': { },
+                        'q_cond_window': { } })
+                    self.pump_volume_H = 0
+                    self.pump_volume_C = 0
+                    for _var_var_12, _var_var_11 in list(self.pre_dict['Zones'].items()):
+                        _var_var_104['indoor_temperature'][_var_var_12] = _var_var_11.T_air_hc
+                        _var_var_104['q_sol_w'][_var_var_12] = _var_var_11.q_sol_w
+                        _var_var_104['q_sol_op'][_var_var_12] = _var_var_11.q_sol_op
+                        _var_var_104['q_inf'][_var_var_12] = _var_var_11.q_inf
+                        _var_var_104['q_NV'][_var_var_12] = _var_var_11.q_NV
+                        _var_var_104['q_H_nd'][_var_var_12] = _var_var_11.q_H_nd
+                        _var_var_104['q_C_nd'][_var_var_12] = _var_var_11.q_C_nd
+                        _var_var_104['heat_energy'][_var_var_12] = _var_var_11.heat_energy
+                        _var_var_104['cool_energy'][_var_var_12] = _var_var_11.cool_energy
+                        _var_var_104['lighting_energy'][_var_var_12] = _var_var_11.qi_li
+                        _var_var_104['equipment_energy'][_var_var_12] = _var_var_11.qi_app
+                        _var_var_104['DHW_dem'][_var_var_12] = _var_var_11.DHW_dem
+                        _var_var_104['fan_energy'][_var_var_12] = _var_var_11.fan_energy
+                        _var_var_104['occupants'][_var_var_12] = _var_var_11.occupants * _var_var_11.occupancy_frac
+                        _var_var_104['q_cond_wall'][_var_var_12] = _var_var_11.Htr_op * (self.Te - _var_var_11.T_air_hc) * 3600
+                        _var_var_104['q_cond_window'][_var_var_12] = _var_var_11.Htr_w * (self.Te - _var_var_11.T_air_hc) * 3600
+                        self.pump_volume_H += _var_var_11.pump_volume_H
+                        self.pump_volume_C += _var_var_11.pump_volume_C
+                    for _var_var_27 in _var_var_104:
+                        _var_var_104[_var_var_27] = pd.DataFrame.from_dict(_var_var_104[_var_var_27])
+                    self.q_sol_w = _var_var_104['q_sol_w'].sum(1, **('axis',))
+                    self.q_sol_op = _var_var_104['q_sol_op'].sum(1, **('axis',))
+                    self.q_inf = _var_var_104['q_inf'].sum(1, **('axis',))
+                    self.q_NV = _var_var_104['q_NV'].sum(1, **('axis',))
+                    self.lighting_energy = _var_var_104['lighting_energy'].sum(1, **('axis',))
+                    self.equipment_energy = _var_var_104['equipment_energy'].sum(1, **('axis',))
+                    self.q_H_nd = _var_var_104['q_H_nd'].sum(1, **('axis',))
+                    self.q_C_nd = _var_var_104['q_C_nd'].sum(1, **('axis',))
+                    self.heat_energy = _var_var_104['heat_energy'].sum(1, **('axis',))
+                    self.cool_energy = _var_var_104['cool_energy'].sum(1, **('axis',))
+                    self.DHW_dem = _var_var_104['DHW_dem'].sum(1, **('axis',))
+                    self.fan_energy = _var_var_104['fan_energy'].sum(1, **('axis',))
+                    self.occupants = _var_var_104['occupants'].sum(1, **('axis',))
+                    self.q_cond_wall = _var_var_104['q_cond_wall'].sum(1, **('axis',))
+                    self.q_cond_window = _var_var_104['q_cond_window'].sum(1, **('axis',))
+                    self.pump_energy_H = self.Pumps.pump_power_H * self.pump_volume_H * np.where(self.heat_energy > 0, 1, 0) * 3600
+                    self.pump_energy_C = self.Pumps.pump_power_C * self.pump_volume_C * np.where(self.cool_energy > 0, 1, 0) * 3600
+                    self.pump_energy_HVAC = self.pump_energy_C + self.pump_energy_H
+                    self.DHW_dem_1 = copy.deepcopy(self.DHW_dem)
+                    self.DHW_dem -= self.Esol_SWH * self.DHW.SWH_Area * 0.5
+                    self.DHW_dem = np.where(self.DHW_dem > 0, self.DHW_dem, 0)
+                    self.DHW_energy = self.DHW_dem / (self.DHW.dstr_eff * self.DHW.gen_eff)
+                    self.Egen_SWH = np.where(self.DHW_energy > 0, self.Esol_SWH * self.DHW.SWH_Area * 0.5, self.DHW_dem_1)
+                    self.DHW_supply_water = np.where(self.DHW_dem != 0, self.Pumps.DHW_flow, 0)
+                    if self.Pumps.fcntrl == 0.5:
+                        self.pump_volume_D = self.DHW_supply_water
+                    elif self.Pumps.fcntrl == 1:
+                        self.pump_volume_D = 0.8 * max(self.DHW_supply_water)
+                    else:
+                        self.pump_volume_D = 0
+                    self.pump_energy_DHW = self.Pumps.pump_power_D * self.pump_volume_D * 3600
+                    self.pump_energy = self.pump_energy_HVAC + self.pump_energy_DHW
+                    self.agg_dict = _var_var_104
+                finally:
+                    '__pyarmor_exit_47129__(...)'
+                return None
+
+
+            
+            def comfAnalysis(self):
+                '__pyarmor_enter_47131__(...)'
+                
+                try:
+                    _var_var_105 = pd.DataFrame((lambda .0: [ _var_var_12 for _var_var_12, _var_var_11 in .0 ])(list(self.pre_dict['Zones'].items())), list(range(len(self.Te))), **('columns', 'index'))
+                    _var_var_106 = pd.DataFrame((lambda .0: [ _var_var_12 for _var_var_12, _var_var_11 in .0 ])(list(self.pre_dict['Zones'].items())), list(range(len(self.Te))), **('columns', 'index'))
+                    _var_var_107 = pd.DataFrame((lambda .0: [ _var_var_12 for _var_var_12, _var_var_11 in .0 ])(list(self.pre_dict['Zones'].items())), list(range(len(self.Te))), **('columns', 'index'))
+                    for _var_var_12, _var_var_11 in list(self.pre_dict['Zones'].items()):
+                        _var_var_105[_var_var_12] = _var_var_11.T_air_hc
+                        _var_var_106[_var_var_12] = _var_var_11.T_s_hc
+                        _var_var_107[_var_var_12] = _var_var_11.occupancy_frac
+                    _var_var_108 = comfort.comfPMVElevatedAirspeed(_var_var_105.values, _var_var_106.values, 0.1, 55, 1.1, 0.5, 0)
+                    _var_var_109 = pd.DataFrame(_var_var_108, (lambda .0: [ _var_var_12 for _var_var_12, _var_var_11 in .0 ])(list(self.pre_dict['Zones'].items())), list(range(len(self.Te))), **('data', 'columns', 'index'))
+                    _var_var_109 = _var_var_107.where(_var_var_107 == 0, _var_var_109)
+                finally:
+                    '__pyarmor_exit_47132__(...)'
+                    return None
+                    '__pyarmor_exit_47132__(...)'
+                    return None
+
+
+            
+            def postProcess(self):
+                '''update the wea_dict and cal_dict, and dump the needed weather and calculated results
+        to wea_calculation.csv under Outputs folder'''
+                '__pyarmor_enter_47134__(...)'
+                
+                try:
+                    _var_var_110 = collections.OrderedDict()
+                    _var_var_110['year'] = self.wea_dict['year']
+                    _var_var_110['month'] = self.wea_dict['month']
+                    _var_var_110['day'] = self.wea_dict['day']
+                    _var_var_110['hour'] = self.wea_dict['hour']
+                    _var_var_110['outdoor_temperature'] = self.Te
+                    _var_var_110['heat_conduction_wall'] = self.q_cond_wall
+                    _var_var_110['heat_conduction_window'] = self.q_cond_window
+                    _var_var_110['heat_solar_gain_window'] = self.q_sol_w
+                    _var_var_110['heat_solar_gain_wall'] = self.q_sol_op
+                    _var_var_110['heat_transfer_infiltration'] = self.q_inf
+                    _var_var_110['heat_transfer_natural_vent'] = self.q_NV
+                    _var_var_110['heating_load'] = self.q_H_nd
+                    _var_var_110['cooling_load'] = self.q_C_nd
+                    _var_var_110['lighting_energy'] = self.lighting_energy
+                    _var_var_110['equipment_energy'] = self.equipment_energy
+                    _var_var_110['heat_energy'] = self.heat_energy
+                    _var_var_110['cool_energy'] = self.cool_energy
+                    _var_var_110['DHW_energy'] = self.DHW_energy
+                    _var_var_110['pump_energy'] = self.pump_energy
+                    _var_var_110['fan_energy'] = self.fan_energy
+                    self.elec_dem = self.lighting_energy + self.equipment_energy + self.cool_energy if self.General.cool_source.cls == 1 else 0 + self.pump_energy + self.fan_energy + self.heat_energy if self.General.heat_source.cls == 1 else 0 + self.DHW_energy if self.General.DHW_source.cls == 1 else 0
+                    _var_var_110['total_electricity'] = np.where(self.elec_dem - self.Egen_PV - self.Egen_wind > 0, self.elec_dem - self.Egen_PV - self.Egen_wind, 0)
+                    _var_var_111 = { }
+                    _var_var_112 = collections.OrderedDict({
+                        1: 'electricity',
+                        2: 'gas',
+                        3: 'district_cooling',
+                        4: 'district_heating',
+                        5: 'steam',
+                        6: 'gasoline',
+                        7: 'diesel',
+                        8: 'coal',
+                        9: 'fuel oil',
+                        10: 'propane',
+                        11: 'kerosene',
+                        12: 'traditional bio',
+                        13: 'others' })
+                    for _var_var_26 in range(1, 7):
+                        if int(self.input_dict['Energy Sources']['Cooling Energy Source']) == _var_var_26:
+                            _var_var_111[_var_var_26] = copy.deepcopy(self.cool_energy)
+                        if int(self.input_dict['Energy Sources']['Heating Energy Source']) == _var_var_26:
+                            if _var_var_26 not in list(_var_var_111.keys()):
+                                _var_var_111[_var_var_26] = copy.deepcopy(self.heat_energy)
+                            else:
+                                _var_var_111[_var_var_26] += copy.deepcopy(self.heat_energy)
+                        if int(self.input_dict['Energy Sources']['DHW Energy Source']) == _var_var_26 or _var_var_26 not in list(_var_var_111.keys()):
+                            _var_var_111[_var_var_26] = copy.deepcopy(self.DHW_energy)
+                        else:
+                            _var_var_111[_var_var_26] += copy.deepcopy(self.DHW_energy)
+                    for _var_var_7, _var_var_8 in list(_var_var_111.items()):
+                        if _var_var_7 != 1:
+                            _var_var_110['total_' + _var_var_112[_var_var_7]] = _var_var_8
+                            continue
+                            _var_var_110['SWH_production'] = self.Egen_SWH
+                            _var_var_110['PV_production'] = np.where(_var_var_110['total_electricity'] > 0, self.Egen_PV, self.Egen_PV ** 2 / (self.Egen_PV + self.Egen_wind))
+                            _var_var_110['wind_production'] = np.where(_var_var_110['total_electricity'] > 0, self.Egen_wind, self.Egen_wind ** 2 / (self.Egen_PV + self.Egen_wind))
+                            if self.if_pmv == True:
+                                _var_var_110['PMV'] = self.comfAnalysis().abs().mean(1, **('axis',))
+                    _var_var_110['occupants'] = self.occupants
+                    self.output_dict = _var_var_110
+                finally:
+                    '__pyarmor_exit_47135__(...)'
+                return None
+
+
+            
+            def dumpResults(self, results_file):
+                '__pyarmor_enter_47137__(...)'
+                
+                try:
+                    _var_var_113 = pd.DataFrame.from_dict(self.output_dict)
+                    _var_var_113.to_csv(results_file + '_hourly.csv')
+                    _var_var_114 = pd.DataFrame()
+                    _var_var_115 = pd.DataFrame.from_dict(self.agg_dict['indoor_temperature'])
+                    for _var_var_116 in _var_var_113:
+                        if _var_var_116 != 'year' and _var_var_116 != 'month' and _var_var_116 != 'day' and _var_var_116 != 'hour' and _var_var_116 != 'outdoor_temperature':
+                            _var_var_114[_var_var_116] = _var_var_113.groupby([
+                                'month'])[_var_var_116].sum() * 1e-06
+                            continue
+                        if _var_var_116 == 'outdoor_temperature':
+                            _var_var_114[_var_var_116] = _var_var_113.groupby([
+                                'month'])[_var_var_116].mean()
+                            continue
+                            _var_var_114.drop('occupants', 1, True, **('axis', 'inplace'))
+                            _var_var_114.to_csv(results_file + '_monthly.csv')
+                            _var_var_115.to_csv(results_file + '_indoor_temperature.csv')
+                            _var_var_117 = os.path.dirname(results_file)
+                    print('Simulation complete! Results are successfully dumped to ' + _var_var_117) if hasattr(self, 'if_print') and self.if_print == True else None
+                finally:
+                    '__pyarmor_exit_47138__(...)'
+                return None
+
+
+            
+            def run(self):
+                '__pyarmor_enter_47140__(...)'
+                
+                try:
+                    self.solarGain()
+                    self.otherHeatGain()
+                    self.initiate()
+                    self.beforeIterate()
+                    self.iterate()
+                    self.hourlyAggregate()
+                    self.energy()
+                    self.renewables()
+                    self.aggregate()
+                    self.postProcess()
+                finally:
+                    '__pyarmor_exit_47141__(...)'
+                return None
+
+
+        finally:
+            '__pyarmor_exit_47081__(...)'
+        return None
+
+
+finally:
+    '__pyarmor_exit_47075__(...)'
+return None
+

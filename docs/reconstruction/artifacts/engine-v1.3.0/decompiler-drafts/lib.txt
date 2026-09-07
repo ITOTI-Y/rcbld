@@ -1,0 +1,2530 @@
+'__pyarmor_enter_47143__(...)'
+
+try:
+    import os
+    import collections
+    import copy
+    import numpy as np
+    parent_folder = os.path.abspath(os.path.join(os.getcwd(), os.pardir)) + '\\'
+    
+    class Surface:
+        '__pyarmor_enter_47146__(...)'
+        
+        try:
+            
+            def __init__(self):
+                '__pyarmor_enter_47149__(...)'
+                
+                try:
+                    self.S = 0
+                    self.SE = -45
+                    self.E = -90
+                    self.NE = -135
+                    self.N = 180
+                    self.NW = 135
+                    self.W = 90
+                    self.SW = 45
+                finally:
+                    '__pyarmor_exit_47150__(...)'
+                return None
+
+
+            
+            def iterAttributes(self):
+                '__pyarmor_enter_47152__(...)'
+                
+                try:
+                    for _var_var_0, _var_var_1 in self.__dict__.items():
+                        if not _var_var_0.startswith('__'):
+                            yield (_var_var_0, _var_var_1)
+                        '__pyarmor_exit_47153__(...)'
+                    '__pyarmor_exit_47153__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47147__(...)'
+        return None
+
+
+    
+    class Ground:
+        '__pyarmor_enter_47155__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47158__(...)'
+                
+                try:
+                    self.k = 0
+                    self.C = 0
+                    self.rou = 0
+                    self.diffusivity = 0
+                    self.name = 0
+                    self.cls = cls
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47159__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47161__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.k = 1.5
+                        self.rou = 1600
+                        self.C = 3000000 / self.rou
+                        self.name = 'clay or silt'
+                    elif self.cls == 2:
+                        self.k = 2
+                        self.rou = 1900
+                        self.C = 2000000 / self.rou
+                        self.name = 'sand or gravel'
+                    elif self.cls == 3:
+                        self.k = 3.5
+                        self.rou = 2500
+                        self.C = 2000000 / self.rou
+                        self.name = 'homogeneous rock'
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.diffusivity = self.k / (self.rou * self.C)
+                    self.string = self.name
+                finally:
+                    '__pyarmor_exit_47162__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47164__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47165__(...)'
+                    return None
+                    '__pyarmor_exit_47165__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47156__(...)'
+        return None
+
+
+    
+    class Envelope_Heat_Capacity_Class:
+        '__pyarmor_enter_47167__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47170__(...)'
+                
+                try:
+                    self.Am = 0
+                    self.Cm = 0
+                    self.cls = cls
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47171__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47173__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.Am = 1.2
+                        self.Cm = 8000
+                    elif self.cls == 2:
+                        self.Am = 1.5
+                        self.Cm = 15000
+                    elif self.cls == 3:
+                        self.Am = 1.8
+                        self.Cm = 25000
+                    elif self.cls == 4:
+                        self.Am = 2
+                        self.Cm = 40000
+                    elif self.cls == 5:
+                        self.Am = 2.2
+                        self.Cm = 60000
+                    elif self.cls == 6:
+                        self.Am = 2.5
+                        self.Cm = 80000
+                    elif self.cls == 7:
+                        self.Am = 2.5
+                        self.Cm = 115000
+                    elif self.cls == 8:
+                        self.Am = 2.5
+                        self.Cm = 165000
+                    elif self.cls == 9:
+                        self.Am = 3
+                        self.Cm = 260000
+                    elif self.cls == 10:
+                        self.Am = 3.2
+                        self.Cm = 300000
+                    elif self.cls == 11:
+                        self.Am = 3.5
+                        self.Cm = 370000
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = 'heat capacity per floor area: ' + str(self.Cm) + ' * Af'
+                finally:
+                    '__pyarmor_exit_47174__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47176__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47177__(...)'
+                    return None
+                    '__pyarmor_exit_47177__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47168__(...)'
+        return None
+
+
+    
+    class Wall:
+        '__pyarmor_enter_47179__(...)'
+        
+        try:
+            
+            def __init__(self, lst):
+                '__pyarmor_enter_47182__(...)'
+                
+                try:
+                    self.lst = lst.split(',')
+                    self.type = 'wall'
+                    self.U_value = None
+                    self.abs = None
+                    self.emissivity = None
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47183__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47185__(...)'
+                
+                try:
+                    if '-' not in self.lst[0]:
+                        self.U_value = float(self.lst[0])
+                    else:
+                        self.U_value = '-'
+                    if '-' not in self.lst[1]:
+                        self.abs = float(self.lst[1])
+                    else:
+                        self.abs = '-'
+                    if '-' not in self.lst[2]:
+                        self.emissivity = float(self.lst[2])
+                    else:
+                        self.emissivity = '-'
+                    self.string = self.type + '\nU-Value:' + str(self.U_value) + '\nabsorption coefficienct:' + str(self.abs) + '\nemissivity:' + str(self.emissivity)
+                finally:
+                    '__pyarmor_exit_47186__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47188__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47189__(...)'
+                    return None
+                    '__pyarmor_exit_47189__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47180__(...)'
+        return None
+
+
+    
+    class Windows:
+        '__pyarmor_enter_47191__(...)'
+        
+        try:
+            
+            def __init__(self, mat_lst):
+                '__pyarmor_enter_47194__(...)'
+                
+                try:
+                    self.mat_lst = mat_lst.split(',')
+                    self.type = 'windows'
+                    self.U_value = None
+                    self.emissivity = None
+                    self.SHGC = None
+                    self.Tsol = None
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47195__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47197__(...)'
+                
+                try:
+                    if '-' not in self.mat_lst[0]:
+                        self.U_value = float(self.mat_lst[0])
+                    else:
+                        self.U_value = '-'
+                    if '-' not in self.mat_lst[1]:
+                        self.emissivity = float(self.mat_lst[1])
+                    else:
+                        self.emissivity = '-'
+                    if '-' not in self.mat_lst[2]:
+                        self.SHGC = float(self.mat_lst[2])
+                    else:
+                        self.SHGC = '-'
+                    if self.SHGC != '-' and self.U_value != '-':
+                        if self.U_value > 4.5 and self.SHGC < 0.7206:
+                            self.Tsol = 0.939998 * self.SHGC ** 2 + 0.20332 * self.SHGC
+                        elif self.U_value > 4.5 and self.SHGC >= 0.7206:
+                            self.Tsol = 1.30415 * self.SHGC - 0.30515
+                        elif self.U_value < 3.4 and self.SHGC <= 0.15:
+                            self.Tsol = 0.4104 * self.SHGC
+                        elif self.U_value < 3.4 and self.SHGC > 0.15:
+                            self.Tsol = 0.085775 * self.SHGC ** 2 + 0.963954 * self.SHGC - 0.084958
+                        elif self.SHGC < 0.7206:
+                            _var_var_2 = 0.939998 * self.SHGC ** 2 + 0.20332 * self.SHGC
+                        else:
+                            _var_var_2 = 1.30415 * self.SHGC - 0.30515
+                        if self.SHGC <= 0.15:
+                            _var_var_3 = 0.4104 * self.SHGC
+                        else:
+                            _var_var_3 = 0.085775 * self.SHGC ** 2 + 0.963954 * self.SHGC - 0.084958
+                        self.Tsol = np.interp(self.U_value, [
+                            3.4,
+                            4.5], [
+                            _var_var_2,
+                            _var_var_3])
+                    else:
+                        self.Tsol = '-'
+                    self.string = self.type + '\nU-Value:' + str(self.U_value) + '\nemissivity:' + str(self.emissivity) + '\nSHGC:' + str(self.SHGC) + '\nsolar transmittance:' + str(self.Tsol)
+                finally:
+                    '__pyarmor_exit_47198__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47200__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47201__(...)'
+                    return None
+                    '__pyarmor_exit_47201__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47192__(...)'
+        return None
+
+
+    
+    class Basement:
+        '__pyarmor_enter_47203__(...)'
+        
+        try:
+            
+            def __init__(self, walls):
+                '__pyarmor_enter_47206__(...)'
+                
+                try:
+                    self.walls = walls
+                    self.string = []
+                finally:
+                    '__pyarmor_exit_47207__(...)'
+                return None
+
+
+            
+            def printByComponent(self):
+                '__pyarmor_enter_47209__(...)'
+                
+                try:
+                    for _var_var_4 in self.walls:
+                        print(_var_var_4)
+                finally:
+                    '__pyarmor_exit_47210__(...)'
+                return None
+
+
+        finally:
+            '__pyarmor_exit_47204__(...)'
+        return None
+
+
+    
+    class Schedule:
+        '__pyarmor_enter_47212__(...)'
+        
+        try:
+            
+            def __init__(self, dct, dim):
+                '__pyarmor_enter_47215__(...)'
+                
+                try:
+                    self.dct = dct
+                    self.dim = dim
+                    self.parseOrigDict()
+                finally:
+                    '__pyarmor_exit_47216__(...)'
+                return None
+
+
+            
+            def sched2Array(self, dct):
+                '__pyarmor_enter_47218__(...)'
+                
+                try:
+                    _var_var_5 = np.zeros((int(list(dct.keys())[-1].split(' ')[-1]), self.dim))
+                    
+                    try:
+                        np.array(list(dct.values())[0].split(',')).astype(float)
+                    finally:
+                        pass
+                    _var_var_5 = _var_var_5.astype(str)
+                    for _var_var_0, _var_var_1 in list(dct.items()):
+                        _var_var_6 = _var_var_0.split(' ')
+                        _var_var_7 = int(_var_var_6[1])
+                        _var_var_8 = int(_var_var_6[-1])
+                        if self.dim != 1:
+                            _var_var_5[_var_var_7:_var_var_8] = np.array(_var_var_1.split(',')).astype(float)
+                            continue
+                        
+                        try:
+                            _var_var_5[_var_var_7:_var_var_8] = float(_var_var_1)
+                        finally:
+                            continue
+                            _var_var_5[_var_var_7:_var_var_8] = _var_var_1
+                            continue
+                            continue
+                            '__pyarmor_exit_47219__(...)'
+                            return _var_var_5
+                            '__pyarmor_exit_47219__(...)'
+                            return None
+
+
+
+
+            
+            def parseOrigDict(self):
+                '__pyarmor_enter_47221__(...)'
+                
+                try:
+                    self.sched = self.sched2Array(self.dct)
+                finally:
+                    '__pyarmor_exit_47222__(...)'
+                return None
+
+
+            
+            def getSchedule(self):
+                '__pyarmor_enter_47224__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47225__(...)'
+                    return None
+                    '__pyarmor_exit_47225__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47213__(...)'
+        return None
+
+
+    
+    class Shading:
+        '__pyarmor_enter_47227__(...)'
+        
+        try:
+            
+            def __init__(self, cls, in_or_out, control):
+                """1': white blinds; 2: white curtains; 3: colored texture;
+        4: alumnimium-coated texture
+        0: in, 1: out"""
+                '__pyarmor_enter_47230__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.in_or_out = in_or_out
+                    self.control = control
+                    self.mat_name = 0
+                    self.side_name = 0
+                    self.SRF = 0
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47231__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47233__(...)'
+                
+                try:
+                    if self.cls == '-':
+                        self.SRF = 1
+                        self.string = 'no shading'
+                finally:
+                    return None
+                    self.cls = int(self.cls)
+                    self.in_or_out = int(self.in_or_out)
+                    self.control = int(self.control)
+                    if self.in_or_out == 1:
+                        self.side_name = 'inside'
+                        if self.cls == 1:
+                            self.SRF = 0.7
+                            self.mat_name = 'white blinds'
+                        elif self.cls == 2:
+                            self.SRF = 0.8
+                            self.mat_name = 'white curtains'
+                        elif self.cls == 3:
+                            self.SRF = 0.57
+                            self.mat_name = 'colored texture'
+                        elif self.cls == 4:
+                            self.SRF = 0.2
+                            self.mat_name = 'alumnimium-coated texture'
+                        else:
+                            raise ValueError('class input not listed!')
+                    elif self.in_or_out == 2:
+                        self.side_name = 'outside'
+                        if self.cls == 1:
+                            self.SRF = 0.3
+                            self.mat_name = 'white blinds'
+                        elif self.cls == 2:
+                            self.SRF = 0.75
+                            self.mat_name = 'white curtains'
+                        elif self.cls == 3:
+                            self.SRF = 0.37
+                            self.mat_name = 'colored texture'
+                        elif self.cls == 4:
+                            self.SRF = 0.08
+                            self.mat_name = 'alumnimium-coated texture'
+                        else:
+                            raise ValueError('class input not listed!')
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = 'shading with %s %s' % (self.mat_name, self.side_name)
+                    '__pyarmor_exit_47234__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47236__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47237__(...)'
+                    return None
+                    '__pyarmor_exit_47237__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47228__(...)'
+        return None
+
+
+    
+    class Infiltration_Leak_Level:
+        '__pyarmor_enter_47239__(...)'
+        
+        try:
+            
+            def __init__(self, bldg_type, level):
+                '__pyarmor_enter_47242__(...)'
+                
+                try:
+                    self.bldg_type = bldg_type
+                    self.level = level
+                    self.rate = 0
+                    self.dCP = 0.75
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47243__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47245__(...)'
+                
+                try:
+                    if self.bldg_type == 1:
+                        if self.level == 1:
+                            self.rate = 0.5
+                            self.string = 'air leakage level low: 1/h at Q4Pa'
+                        elif self.level == 2:
+                            self.rate = 1
+                            self.string = 'air leakage level medium: 1/h at Q4Pa'
+                        elif self.level == 3:
+                            self.rate = 3
+                            self.string = 'air leakage level high: 3/h at Q4Pa'
+                        else:
+                            raise ValueError('class input not listed!')
+                    elif self.bldg_type == 2:
+                        if self.level == 1:
+                            self.rate = 0.5
+                            self.string = 'air leakage level low: 0.5h at Q4Pa'
+                        elif self.level == 2:
+                            self.rate = 1
+                            self.string = 'air leakage level medium: 1/h at Q4Pa'
+                        elif self.level == 3:
+                            self.rate = 3
+                            self.string = 'air leakage level high: 3/h at Q4Pa'
+                        else:
+                            raise ValueError('class input not listed!')
+                    elif self.bldg_type == 3:
+                        if self.level == 'low':
+                            self.rate = 2
+                            self.string = 'air leakage level low: 2/h at Q4Pa'
+                        elif self.level == 'medium':
+                            self.rate = 4
+                            self.string = 'air leakage level medium: 4/h at Q4Pa'
+                        elif self.level == 'high':
+                            self.rate = 6
+                            self.string = 'air leakage level high: 6/h at Q4Pa'
+                        else:
+                            raise ValueError('class input not listed!')
+                    else:
+                        raise ValueError('class input not listed!')
+                finally:
+                    '__pyarmor_exit_47246__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47248__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47249__(...)'
+                    return None
+                    '__pyarmor_exit_47249__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47240__(...)'
+        return None
+
+
+    
+    class Natural_Ventilation:
+        '__pyarmor_enter_47251__(...)'
+        
+        try:
+            
+            def __init__(self, cls_type, open_angle, night_flush, occ_sched):
+                '__pyarmor_enter_47254__(...)'
+                
+                try:
+                    self.cls_type = cls_type
+                    self.ca = 1.2
+                    self.occ_sched = occ_sched
+                    self.NV_sched = None
+                    self.string = 0
+                    self.Ck = 0
+                    self.open_angle = open_angle
+                    self.night_flush = night_flush
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47255__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47257__(...)'
+                
+                try:
+                    if self.open_angle == 0:
+                        self.Ck = 0
+                    elif self.open_angle == 10:
+                        self.Ck = 0.17
+                    elif self.open_angle == 15:
+                        self.Ck = 0.25
+                    elif self.open_angle == 20:
+                        self.Ck = 0.33
+                    elif self.open_angle == 25:
+                        self.Ck = 0.39
+                    elif self.open_angle == 30:
+                        self.Ck = 0.46
+                    elif self.open_angle == 45:
+                        self.Ck = 0.62
+                    elif self.open_angle == 60:
+                        self.Ck = 0.74
+                    elif self.open_angle == 90:
+                        self.Ck = 0.9
+                    elif self.open_angle == 180:
+                        self.Ck = 1
+                    else:
+                        raise ValueError('class input not listed!')
+                    if self.cls_type != 1:
+                        self.NV_sched = np.where(self.occ_sched > 0, 1, 0)
+                    else:
+                        self.NV_sched = np.zeros(self.occ_sched.shape)
+                    if self.night_flush == 1:
+                        self.string = 'natural ventilation with window open at an angle of: ' + str(self.open_angle) + ' w/night flush'
+                        self.NV_sched = np.where(self.NV_sched == 0, 1, self.NV_sched)
+                finally:
+                    return None
+                    if self.night_flush == 2:
+                        self.string = 'natural ventilation with window open at an angle of: ' + str(self.open_angle) + ' w/o night flush'
+                    return None
+                    '__pyarmor_exit_47258__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47260__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47261__(...)'
+                    return None
+                    '__pyarmor_exit_47261__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47252__(...)'
+        return None
+
+
+    
+    class Heat_Recovery_Sys:
+        '__pyarmor_enter_47263__(...)'
+        
+        try:
+            
+            def __init__(self, cls_type):
+                '__pyarmor_enter_47266__(...)'
+                
+                try:
+                    self.name = 0
+                    self.HR_eff = 0
+                    self.cls_type = cls_type
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47267__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47269__(...)'
+                
+                try:
+                    if self.cls_type == 1:
+                        self.name = 'no heat recovery'
+                        self.HR_eff = 0
+                    elif self.cls_type == 2:
+                        self.name = 'heat change plates or pipes'
+                        self.HR_eff = 0.65
+                    elif self.cls_type == 3:
+                        self.name = 'two-elements-system'
+                        self.HR_eff = 0.6
+                    elif self.cls_type == 4:
+                        self.name = 'loading cold with air-conditioning'
+                        self.HR_eff = 0.4
+                    elif self.cls_type == 5:
+                        self.name = 'heat pipes'
+                        self.HR_eff = 0.6
+                    elif self.cls_type == 6:
+                        self.name = 'slow rotating or intermittent heat exchanger'
+                        self.HR_eff = 0.7
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = 'heat recovery system w/' + self.name + ' (efficiency: ' + str(self.HR_eff) + ' )'
+                finally:
+                    '__pyarmor_exit_47270__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47272__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47273__(...)'
+                    return None
+                    '__pyarmor_exit_47273__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47264__(...)'
+        return None
+
+
+    
+    class Terrain_Class:
+        '__pyarmor_enter_47275__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47278__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.vsite = 0
+                    self.name = 0
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47279__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47281__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.vsite = 1
+                        self.name = 'open terrain'
+                    elif self.cls == 2:
+                        self.vsite = 0.9
+                        self.name = 'country'
+                    elif self.cls == 3:
+                        self.vsite = 0.8
+                        self.name = 'urban'
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = self.name + ': ' + str(self.vsite)
+                finally:
+                    '__pyarmor_exit_47282__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47284__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47285__(...)'
+                    return None
+                    '__pyarmor_exit_47285__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47276__(...)'
+        return None
+
+
+    
+    class Exhaust_Air_Recirculation:
+        '__pyarmor_enter_47287__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47290__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.factor = 0
+                    self.name = 0
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47291__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47293__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.factor = 1
+                        self.name = 'no exhaust air recirculation'
+                    elif self.cls == 2:
+                        self.factor = 0.8
+                        self.name = 'exhaust air recirculation 20%'
+                    elif self.cls == 3:
+                        self.factor = 0.6
+                        self.name = 'exhaust air recirculation 40%'
+                    elif self.cls == 4:
+                        self.factor = 0.4
+                        self.name = 'exhaust air recirculation 60%'
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = self.name
+                finally:
+                    '__pyarmor_exit_47294__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47296__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47297__(...)'
+                    return None
+                    '__pyarmor_exit_47297__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47288__(...)'
+        return None
+
+
+    
+    class HVAC_Sys:
+        '__pyarmor_enter_47299__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47302__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.f_waste = 0
+                    self.a_heat = 0
+                    self.a_cool = 0
+                    self.string = 0
+                    self.name = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47303__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47305__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0
+                        self.name = 'No airco system / Water or Water&Air / NA / Yes '
+                    elif self.cls == 2:
+                        self.f_waste = 0
+                        self.a_heat = 0.25
+                        self.a_cool = 0
+                        self.name = 'No airco system / Water or Water&Air / NA / No'
+                    elif self.cls == 3:
+                        self.f_waste = 0
+                        self.a_heat = 0
+                        self.a_cool = 0
+                        self.name = 'No airco system / Air / NA /  Yes'
+                    elif self.cls == 4:
+                        self.f_waste = 0
+                        self.a_heat = 0.36
+                        self.a_cool = 0
+                        self.name = 'No airco system / Air / NA /  No'
+                    elif self.cls == 5:
+                        self.f_waste = 0.03
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Single duct system / Water or Water&Air / Water / Yes'
+                    elif self.cls == 6:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0
+                        self.name = 'Single duct system / Water or Water&Air / Air / Yes'
+                    elif self.cls == 7:
+                        self.f_waste = 0
+                        self.a_heat = 0.25
+                        self.a_cool = 0
+                        self.name = 'No airco system / Air / NA /  No'
+                    elif self.cls == 8:
+                        self.f_waste = 0.04
+                        self.a_heat = 0
+                        self.a_cool = 0
+                        self.name = 'Single duct system / Air  / Air / Yes'
+                    elif self.cls == 9:
+                        self.f_waste = 0
+                        self.a_heat = 0.36
+                        self.a_cool = 0
+                        self.name = 'Single duct system / Air / Air / No'
+                    elif self.cls == 10:
+                        self.f_waste = 0.03
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Dual duct system / Water or Water&Air / Water / Yes'
+                    elif self.cls == 11:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0
+                        self.name = 'Dual duct system / Water or Water&Air / Air / Yes'
+                    elif self.cls == 12:
+                        self.f_waste = 0
+                        self.a_heat = 0.25
+                        self.a_cool = 0
+                        self.name = 'Dual duct system  / Water or Water&Air / Air / No'
+                    elif self.cls == 13:
+                        self.f_waste = 0.08
+                        self.a_heat = 0
+                        self.a_cool = 0.01
+                        self.name = 'Dual duct system / Air / Water / Yes'
+                    elif self.cls == 14:
+                        self.f_waste = 0.03
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Single duct , Terminal reheat / Water or Water&Air / Water / Yes'
+                    elif self.cls == 15:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0
+                        self.name = 'Single duct , Terminal reheat  / Water or Water&Air / Air / Yes'
+                    elif self.cls == 16:
+                        self.f_waste = 0
+                        self.a_heat = 0.25
+                        self.a_cool = 0
+                        self.name = 'Single duct , Terminal reheat / Water or Water&Air / Air / No'
+                    elif self.cls == 17:
+                        self.f_waste = 0.03
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Constant volume / Water or Water&Air / Water / Yes'
+                    elif self.cls == 18:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0
+                        self.name = 'Constant volume / Water or Water&Air / Air / Yes'
+                    elif self.cls == 19:
+                        self.f_waste = 0
+                        self.a_heat = 0.25
+                        self.a_cool = 0
+                        self.name = 'Constant volume / Water or Water&Air / Air / No'
+                    elif self.cls == 20:
+                        self.f_waste = 0.04
+                        self.a_heat = 0
+                        self.a_cool = 0
+                        self.name = 'Constant volume / Air  / Air / Yes'
+                    elif self.cls == 21:
+                        self.f_waste = 0
+                        self.a_heat = 0.36
+                        self.a_cool = 0
+                        self.name = 'Constant volume / Air / Air / No'
+                    elif self.cls == 22:
+                        self.f_waste = 0.03
+                        self.a_heat = 0.03
+                        self.a_cool = 0.01
+                        self.name = 'Variable air volume / Water or Water&Air / Water / Yes'
+                    elif self.cls == 23:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0
+                        self.name = 'Variable air volume / Water or Water&Air / Air / Yes'
+                    elif self.cls == 24:
+                        self.f_waste = 0
+                        self.a_heat = 0.25
+                        self.a_cool = 0
+                        self.name = 'Variable air volume / Water or Water&Air / Air / No'
+                    elif self.cls == 25:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Fan coil system, 2-pipe'
+                    elif self.cls == 26:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Fan coil system, 3-pipe'
+                    elif self.cls == 27:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Fan coil system, 4-pipe'
+                    elif self.cls == 28:
+                        self.f_waste = 0.08
+                        self.a_heat = 0
+                        self.a_cool = 0.01
+                        self.name = 'Induction system, 2-pipe non change over'
+                    elif self.cls == 29:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Induction system, 2-pipe change over'
+                    elif self.cls == 30:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Induction system, 3-pipe'
+                    elif self.cls == 31:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Induction system, 4-pipe'
+                    elif self.cls == 32:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = '2-pipe radiant cooling panels (chilled ceilings & passive chilled beams)'
+                    elif self.cls == 33:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = '4-pipe radiant cooling panels (chilled ceilings & passive chilled beams)'
+                    elif self.cls == 34:
+                        self.f_waste = 0.04
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Embedded cooling system floors, walls or ceilings'
+                    elif self.cls == 35:
+                        self.f_waste = 0
+                        self.a_heat = 0.08
+                        self.a_cool = 0.01
+                        self.name = 'Room units including single duct units'
+                    elif self.cls == 36:
+                        self.f_waste = 0
+                        self.a_heat = 0
+                        self.a_cool = 0
+                        self.name = 'Direct expansion single split system'
+                    elif self.cls == 37:
+                        self.f_waste = 0
+                        self.a_heat = 0
+                        self.a_cool = 0
+                        self.name = 'Direct expansion single split system including variable refrigerant flow systems'
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = self.name + ': f_waste = ' + str(self.f_waste) + ', a_heat = ' + str(self.a_heat) + ', a_cool = ' + str(self.a_cool)
+                finally:
+                    '__pyarmor_exit_47306__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47308__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47309__(...)'
+                    return None
+                    '__pyarmor_exit_47309__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47300__(...)'
+        return None
+
+
+    
+    class BEM_Sys:
+        '__pyarmor_enter_47311__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47314__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.name = 0
+                    self.f_BAC_hc = 0
+                    self.f_BAC_e = 0
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47315__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47317__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.name = 'Class D'
+                        self.f_BAC_hc = 1.51
+                        self.f_BAC_e = 1.1
+                    elif self.cls == 2:
+                        self.name = 'Class C'
+                        self.f_BAC_hc = 1
+                        self.f_BAC_e = 1
+                    elif self.cls == 3:
+                        self.name = 'Class B'
+                        self.f_BAC_hc = 0.8
+                        self.f_BAC_e = 0.93
+                    elif self.cls == 4:
+                        self.name = 'Class A'
+                        self.f_BAC_hc = 0.7
+                        self.f_BAC_e = 0.87
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = 'BEM system: ' + self.name + ' with f_BAC_hc: ' + str(self.f_BAC_hc) + ' and f_BAC_e: ' + str(self.f_BAC_e)
+                finally:
+                    '__pyarmor_exit_47318__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47320__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47321__(...)'
+                    return None
+                    '__pyarmor_exit_47321__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47312__(...)'
+        return None
+
+
+    
+    class Fan:
+        '__pyarmor_enter_47323__(...)'
+        
+        try:
+            
+            def __init__(self):
+                '__pyarmor_enter_47326__(...)'
+                
+                try:
+                    self.rho = 0.00123991
+                    self.string = 'Fan'
+                finally:
+                    '__pyarmor_exit_47327__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47329__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47330__(...)'
+                    return None
+                    '__pyarmor_exit_47330__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47324__(...)'
+        return None
+
+
+    
+    class Pump_Sys:
+        '__pyarmor_enter_47332__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47335__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.name = 0
+                    self.rho = 4.184
+                    self.string = 0
+                    self.factor = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47336__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47338__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.name = 'no pump used'
+                        self.factor = 0
+                    elif self.cls == 2:
+                        self.name = 'automatic control more than 50%'
+                        self.factor = 0.5
+                    elif self.cls == 3:
+                        self.name = 'all other case'
+                        self.factor = 1
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = self.name
+                finally:
+                    '__pyarmor_exit_47339__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47341__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47342__(...)'
+                    return None
+                    '__pyarmor_exit_47342__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47333__(...)'
+        return None
+
+
+    
+    class DHW_Sys:
+        '__pyarmor_enter_47344__(...)'
+        
+        try:
+            
+            def __init__(self, distr_cls, sys_cls):
+                '__pyarmor_enter_47347__(...)'
+                
+                try:
+                    self.distr_cls = distr_cls
+                    self.sys_cls = sys_cls
+                    self.string = ''
+                    self.distr_eff = 0
+                    self.sys_eff = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47348__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47350__(...)'
+                
+                try:
+                    if self.sys_cls == 1:
+                        self.sys_eff = 0.75
+                        self.string += 'electric generation'
+                    elif self.sys_cls == 2:
+                        self.sys_eff = 0.61
+                        self.string += 'VR-boiler'
+                    elif self.sys_cls == 3:
+                        self.sys_eff = 0.75
+                        self.string += 'gas_boiler or HR-boiler'
+                    elif self.sys_cls == 4:
+                        self.sys_eff = 0.9
+                        self.string += 'co-generation'
+                    elif self.sys_cls == 5:
+                        self.sys_eff = 0.9
+                        self.string += 'district heating'
+                    elif self.sys_cls == 6:
+                        self.sys_eff = 1.4
+                        self.string += 'heat pump'
+                    elif self.sys_cls == 7:
+                        self.sys_eff = 0.61
+                        self.string += 'steam'
+                    else:
+                        raise ValueError('class input not listed!')
+                    if self.distr_cls == 1:
+                        self.distr_eff = 1
+                        self.string += ' that all taps within 3m from heat generation'
+                    elif self.distr_cls == 2:
+                        self.distr_eff = 0.8
+                        self.string += ' that taps more than 3m from heat generation'
+                    elif self.distr_cls == 3:
+                        self.distr_eff = 0.6
+                        self.string += ' of circulation system or unknown'
+                    else:
+                        raise ValueError('class input not listed!')
+                finally:
+                    '__pyarmor_exit_47351__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47353__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47354__(...)'
+                    return None
+                    '__pyarmor_exit_47354__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47345__(...)'
+        return None
+
+
+    
+    class PV_Sys:
+        '__pyarmor_enter_47356__(...)'
+        
+        try:
+            
+            def __init__(self, cls, vent_type):
+                '__pyarmor_enter_47359__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.vent_type = vent_type
+                    self.Kpk = 0
+                    self.fperf = 0
+                    self.name = 0
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47360__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47362__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.Kpk = 0.15
+                        self.name = 'Mono crystalline silicona of Kpk = 0.15kW/m2'
+                    elif self.cls == 2:
+                        self.Kpk = 0.13
+                        self.name = 'Multi crystalline silicona of Kpk = 0.13kW/m2'
+                    elif self.cls == 3:
+                        self.Kpk = 0.06
+                        self.name = 'Thin film amorphous silicon of Kpk = 0.06kW/m2'
+                    elif self.cls == 4:
+                        self.Kpk = 0.035
+                        self.name = 'Other thin film layers of Kpk = 0.035kW/m2'
+                    elif self.cls == 5:
+                        self.Kpk = 0.105
+                        self.name = 'Thin film copper-indium-gallium-diselenide of Kpk = 0.105kW/m2'
+                    elif self.cls == 6:
+                        self.Kpk = 0.095
+                        self.name = 'Thin film cadmium-telloride of Kpk = 0.095kW/m2'
+                    else:
+                        raise ValueError('class input not listed!')
+                    if self.vent_type == 1:
+                        self.fperf = 0.7
+                        self.string = self.name + ' w/fperf = 0.7'
+                    elif self.vent_type == 2:
+                        self.fperf = 0.75
+                        self.string = self.name + ' w/fperf = 0.75'
+                    elif self.vent_type == 3:
+                        self.fperf = 0.78
+                        self.string = self.name + ' w/fperf = 0.8'
+                    else:
+                        raise ValueError('class input not listed!')
+                finally:
+                    '__pyarmor_exit_47363__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47365__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47366__(...)'
+                    return None
+                    '__pyarmor_exit_47366__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47357__(...)'
+        return None
+
+
+    
+    class Primary_Energy_Factor:
+        '__pyarmor_enter_47368__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47371__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.name = 0
+                    self.string = 0
+                    self.factor = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47372__(...)'
+                return None
+
+
+            
+            def getParameters(self):
+                '__pyarmor_enter_47374__(...)'
+                
+                try:
+                    if self.cls == 1:
+                        self.factor = 3.167
+                        self.name = 'electricity'
+                    elif self.cls == 2:
+                        self.factor = 1.084
+                        self.name = 'natural gas'
+                    elif self.cls == 3:
+                        self.factor = 1.056
+                        self.name = 'district cooling'
+                    elif self.cls == 4:
+                        self.factor = 3.613
+                        self.name = 'district heating'
+                    elif self.cls == 5:
+                        self.factor = 0.3
+                        self.name = 'steam'
+                    elif self.cls == 6:
+                        self.factor = 1.05
+                        self.name = 'gasoline'
+                    elif self.cls == 7:
+                        self.factor = 1.05
+                        self.name = 'diesel'
+                    elif self.cls == 8:
+                        self.factor = 1.05
+                        self.name = 'coal'
+                    elif self.cls == 9:
+                        self.factor = 1.05
+                        self.name = 'fuel oil'
+                    elif self.cls == 10:
+                        self.factor = 1.05
+                        self.name = 'propane'
+                    elif self.cls == 11:
+                        self.factor = 1.05
+                        self.name = 'kerosene'
+                    elif self.cls == 12:
+                        self.factor = 1.05
+                        self.name = 'traditional bio'
+                    elif self.cls == 13:
+                        self.factor = 1.05
+                        self.name = 'others'
+                    else:
+                        raise ValueError('class input not listed!')
+                    self.string = self.name + 'w/conversion factor = ' + str(self.factor)
+                finally:
+                    '__pyarmor_exit_47375__(...)'
+                return None
+
+
+            
+            def __str__(self):
+                '__pyarmor_enter_47377__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47378__(...)'
+                    return None
+                    '__pyarmor_exit_47378__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47369__(...)'
+        return None
+
+
+    
+    class Building_Type:
+        '__pyarmor_enter_47380__(...)'
+        
+        try:
+            
+            def __init__(self, cls):
+                '__pyarmor_enter_47383__(...)'
+                
+                try:
+                    self.cls = cls
+                    self.name = 0
+                    self.week_sched = 0
+                    self.string = 0
+                    self.getParameters()
+                finally:
+                    '__pyarmor_exit_47384__(...)'
+                return None
+
+
+        finally:
+            '__pyarmor_exit_47381__(...)'
+        return None
+
+
+    
+    class Read_Inputs:
+        '__pyarmor_enter_47386__(...)'
+        
+        try:
+            
+            def __init__(self, input_file):
+                '__pyarmor_enter_47389__(...)'
+                
+                try:
+                    self.input_file = input_file
+                    self.input_dict = { }
+                    self.finish = False
+                    self.content = self.readFile()
+                    self.readIntoMainDict()
+                finally:
+                    '__pyarmor_exit_47390__(...)'
+                return None
+
+
+            
+            def readFile(self):
+                '__pyarmor_enter_47392__(...)'
+                
+                try:
+                    with open(self.input_file, 'r', 'utf-8', **('encoding',)) as _var_var_9:
+                        _var_var_10 = _var_var_9.readlines()
+                        None(None, None, None)
+                    with None:
+                        if not None:
+                            pass
+                finally:
+                    '__pyarmor_exit_47393__(...)'
+                    return _var_var_10
+                    '__pyarmor_exit_47393__(...)'
+                    return None
+
+
+            
+            def line2Dict(self, line, dct):
+                '__pyarmor_enter_47395__(...)'
+                
+                try:
+                    if '!!!' in line:
+                        _var_var_11 = line.split('!!!')[0].split(':')
+                        _var_var_0 = _var_var_11[0].lstrip(' ').rstrip(' ')
+                        if len(_var_var_11) > 2:
+                            _var_var_1 = [
+                                ':'.join((lambda .0: for _var_var_12 in .0:
+_var_var_12)(_var_var_11[1:]))][0].lstrip(' ').rstrip('\t')
+                        else:
+                            _var_var_1 = _var_var_11[1].lstrip(' ').rstrip(' \n\t')
+                        dct[_var_var_0] = _var_var_1
+                    else:
+                        _var_var_11 = line.split(':')
+                        _var_var_0 = _var_var_11[0].lstrip(' ').rstrip(' ')
+                        _var_var_1 = _var_var_11[1].replace('\n', '').lstrip(' ').rstrip(' \n\t')
+                        dct[_var_var_0] = _var_var_1
+                finally:
+                    '__pyarmor_exit_47396__(...)'
+                return None
+
+
+            
+            def parseLines2SubDict(self, lines, dct):
+                '__pyarmor_enter_47398__(...)'
+                
+                try:
+                    for _var_var_13 in lines:
+                        if 'zone name:' in _var_var_13.lower() and 'surface name:' in _var_var_13.lower() and 'hvac name:' in _var_var_13.lower() or 'lighting name:' in _var_var_13.lower():
+                            _var_var_14 = _var_var_13.split('!!!')[0].split(':')[1].lstrip(' ').rstrip(' \n\t')
+                            dct[_var_var_14] = collections.OrderedDict()
+                            continue
+                        
+                        try:
+                            self.line2Dict(_var_var_13, dct[_var_var_14])
+                        finally:
+                            continue
+                            self.line2Dict(_var_var_13, dct)
+                            continue
+                            continue
+                            '__pyarmor_exit_47399__(...)'
+                        return None
+
+
+
+            
+            def readSubDicts(self):
+                '__pyarmor_enter_47401__(...)'
+                
+                try:
+                    _var_var_10 = self.content
+                    for _var_var_15 in range(len(_var_var_10)):
+                        if _var_var_10[_var_var_15].startswith('$') and 'Schedules:' in _var_var_10[_var_var_15]:
+                            _var_var_0 = _var_var_10[_var_var_15].split('!!!')[0].split(':')[0].lstrip(' $')
+                            self.input_dict[_var_var_0] = collections.OrderedDict()
+                            for _var_var_16 in range(_var_var_15 + 1, len(_var_var_10) - 1):
+                                if _var_var_10[_var_var_16].startswith('Schedule Name:'):
+                                    _var_var_17 = []
+                                    _var_var_18 = _var_var_10[_var_var_16].split('!!!')[0].split(':')[1].lstrip(' ').rstrip(' \n\t')
+                                    self.input_dict[_var_var_0][_var_var_18] = collections.OrderedDict()
+                                    if 'Schedule Name:' not in _var_var_10[_var_var_16 + 1] and '$' not in _var_var_10[_var_var_16 + 1]:
+                                        if ':' in _var_var_10[_var_var_16 + 1]:
+                                            _var_var_17.append(_var_var_10[_var_var_16 + 1])
+                                        _var_var_16 += 1
+                                        continue
+                                    self.parseLines2SubDict(_var_var_17, self.input_dict[_var_var_0][_var_var_18])
+                                    continue
+                                if _var_var_10[_var_var_16].startswith('$'):
+                                    pass
+                                
+                                if _var_var_10[_var_var_15].startswith('$'):
+                                    _var_var_19 = _var_var_10[_var_var_15].split(':')[0].strip('$')
+                                    self.input_dict[_var_var_19] = collections.OrderedDict()
+                                    _var_var_17 = []
+                                    
+                                    try:
+                                        if '$' not in _var_var_10[_var_var_15 + 1]:
+                                            if ':' in _var_var_10[_var_var_15 + 1]:
+                                                _var_var_17.append(_var_var_10[_var_var_15 + 1])
+                                            _var_var_15 += 1
+                                            continue
+                                        self.parseLines2SubDict(_var_var_17, self.input_dict[_var_var_19])
+                                    finally:
+                                        continue
+                                        self.parseLines2SubDict(_var_var_17, self.input_dict[_var_var_19])
+                                        continue
+                                        continue
+                                        for _var_var_14, _var_var_5 in list(self.input_dict['Building Use Schedules'].items()):
+                                            self.input_dict['Building Use Schedules'][_var_var_14] = Schedule(_var_var_5, 10)
+                                        for _var_var_14, _var_var_5 in list(self.input_dict['Indoor Temperature Setpoint Schedules'].items()):
+                                            self.input_dict['Indoor Temperature Setpoint Schedules'][_var_var_14] = Schedule(_var_var_5, 4)
+                                        for _var_var_14, _var_var_5 in list(self.input_dict['Monthly Schedules'].items()):
+                                            self.input_dict['Monthly Schedules'][_var_var_14] = Schedule(_var_var_5, 1)
+                                        '__pyarmor_exit_47402__(...)'
+                                    return None
+
+
+
+            
+            def readIntoMainDict(self):
+                '__pyarmor_enter_47404__(...)'
+                
+                try:
+                    self.readSubDicts()
+                    self.finish = True
+                finally:
+                    '__pyarmor_exit_47405__(...)'
+                return None
+
+
+            
+            def getInputDict(self):
+                '__pyarmor_enter_47407__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47408__(...)'
+                    return None
+                    '__pyarmor_exit_47408__(...)'
+                    return None
+
+
+            
+            def printDict(self):
+                '__pyarmor_enter_47410__(...)'
+                
+                try:
+                    if self.finish:
+                        for _var_var_0, _var_var_1 in list(self.input_dict.items()):
+                            print((_var_var_0, _var_var_1, '\n'))
+                    else:
+                        print('Reading input file is not successfule!')
+                finally:
+                    '__pyarmor_exit_47411__(...)'
+                return None
+
+
+        finally:
+            '__pyarmor_exit_47387__(...)'
+        return None
+
+
+    
+    class Pre_Calculation:
+        '__pyarmor_enter_47413__(...)'
+        
+        try:
+            
+            def __init__(self, wea_dict, input_dict, first_day):
+                '__pyarmor_enter_47416__(...)'
+                
+                try:
+                    self.input_dict = input_dict
+                    self.wea_dict = wea_dict
+                    self.first_day = first_day
+                    self.dct = { }
+                    self.getGeneralInfo()
+                    self.getZoneInfo()
+                    self.getDHW()
+                    self.getPumps()
+                    self.getPV()
+                    self.getWindSys()
+                finally:
+                    '__pyarmor_exit_47417__(...)'
+                return None
+
+
+            
+            def getGeneralInfo(self):
+                '__pyarmor_enter_47419__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    if self.input_dict['Basics']['Envelope Heat Capacity Type'] != '-':
+                        _var_var_23 = Envelope_Heat_Capacity_Class(int(self.input_dict['Basics']['Envelope Heat Capacity Type']))
+                        _var_var_22['Cm'] = _var_var_23.Cm
+                        _var_var_22['Am'] = _var_var_23.Am
+                    else:
+                        _var_var_22['Cm'] = float(self.input_dict['Basics']['Envelope Heat Capacity'])
+                        _var_var_22['Am'] = float(self.input_dict['Basics']['Effective Mass Area'])
+                    if 'Internal Air Heat Transfer Coefficient' not in self.input_dict['Basics'].keys():
+                        _var_var_22['At'] = 4.5
+                    elif self.input_dict['Basics']['Internal Air Heat Transfer Coefficient'] != '-':
+                        _var_var_22['At'] = float(self.input_dict['Basics']['Internal Air Heat Transfer Coefficient'])
+                    else:
+                        _var_var_22['At'] = 4.5
+                    _var_var_22['building length'] = float(self.input_dict['Basics']['Building Length'])
+                    _var_var_22['building width'] = float(self.input_dict['Basics']['Building Width'])
+                    _var_var_22['building area'] = float(self.input_dict['Basics']['Ground Floor Area'])
+                    _var_var_22['building type'] = int(self.input_dict['Basics']['Building Type'])
+                    _var_var_22['ground temperature'] = np.array(self.input_dict['Basics']['Monthly Ground Surface Temperature'].split(',')).astype(float)
+                    _var_var_24 = Ground(float(self.input_dict['Basics']['Ground Type']))
+                    _var_var_22['ground conductivity'] = _var_var_24.k
+                    _var_var_22['ground heat capacity'] = _var_var_24.C
+                    _var_var_22['ground diffusivity'] = _var_var_24.diffusivity
+                    _var_var_22['ground density'] = _var_var_24.rou
+                    _var_var_22['cummulative hour'] = np.array(list(range(1, len(self.wea_dict['DBT']) + 1)))
+                    _var_var_22['date'] = np.where(np.mod(_var_var_22['cummulative hour'], 24) == 0, _var_var_22['cummulative hour'] // 24, _var_var_22['cummulative hour'] // 24 + 1)
+                    _var_var_22['day'] = np.where(np.mod(_var_var_22['date'], 7) == 0, 7, np.mod(_var_var_22['date'], 7))
+                    _var_var_22['hour'] = np.where(np.mod(_var_var_22['cummulative hour'], 24) == 0, 24, np.mod(_var_var_22['cummulative hour'], 24))
+                    _var_var_21 = collections.OrderedDict([
+                        ('mon', 1),
+                        ('tue', 1),
+                        ('wed', 1),
+                        ('thr', 1),
+                        ('fri', 1),
+                        ('sat', 0),
+                        ('sun', 0)])
+                    _var_var_25 = list(_var_var_21)
+                    if self.first_day not in _var_var_25:
+                        raise ValueError('Please choose one weekday to start with the simulation: mon, tue, wed, thr, fri, sat, sun')
+                    _var_var_25 = _var_var_25[_var_var_25.index(self.first_day):] + _var_var_25[:_var_var_25.index(self.first_day)]
+                    _var_var_20 = (lambda .0: [ week_day[_var_var_26] for _var_var_26 in .0 ])(_var_var_25)
+                    _var_var_22['day type'] = None((lambda .0: [ np.array(one_week)[_var_var_27 - 1] for _var_var_27 in .0 ])(_var_var_22['day']))
+                    _var_var_22['cool_source'] = Primary_Energy_Factor(int(self.input_dict['Energy Sources']['Cooling Energy Source']))
+                    _var_var_22['heat_source'] = Primary_Energy_Factor(int(self.input_dict['Energy Sources']['Heating Energy Source']))
+                    _var_var_22['DHW_source'] = Primary_Energy_Factor(int(self.input_dict['Energy Sources']['DHW Energy Source']))
+                    _var_var_22['HVAC_dct'] = { }
+                    self.dct['General'] = _var_var_22
+                finally:
+                    '__pyarmor_exit_47420__(...)'
+                return None
+
+
+            
+            def ifEmptyEnvelope(self, env_name):
+                '__pyarmor_enter_47422__(...)'
+                
+                try:
+                    if env_name == '-':
+                        pass
+                finally:
+                    return '-'
+                    return self.input_dict['Envelope Setting'][env_name]
+                    '__pyarmor_exit_47423__(...)'
+                return None
+
+
+            
+            def getZoneInfo(self):
+                '__pyarmor_enter_47425__(...)'
+                
+                try:
+                    self.dct['Zones'] = { }
+                    _var_var_22 = { }
+                    for _var_var_30, _var_var_31 in list(self.input_dict['Zones'].items()):
+                        _var_var_22[_var_var_30] = { }
+                        _var_var_22[_var_var_30]['multiplier'] = int(_var_var_31['Multiplier'])
+                        _var_var_32 = int(_var_var_31['Multiplier'])
+                        _var_var_22[_var_var_30]['lenght'] = float(_var_var_31['Length']) if isinstance(_var_var_31['Length'], float) else '-'
+                        _var_var_22[_var_var_30]['width'] = float(_var_var_31['Width']) if isinstance(_var_var_31['Width'], float) else '-'
+                        _var_var_22[_var_var_30]['height'] = float(_var_var_31['Height']) * _var_var_32
+                        _var_var_22[_var_var_30]['Af'] = _var_var_32 * float(_var_var_31['Area'])
+                        _var_var_33 = _var_var_22[_var_var_30]['Af']
+                        _var_var_22[_var_var_30]['occupancy'] = float(_var_var_31['Occupancy'])
+                        if float(_var_var_31['Occupancy']) == 0:
+                            _var_var_22[_var_var_30]['occupants'] = 0
+                            _var_var_22[_var_var_30]['occupant load'] = 0
+                        else:
+                            _var_var_22[_var_var_30]['occupants'] = _var_var_33 / float(_var_var_31['Occupancy'])
+                            _var_var_22[_var_var_30]['occupant load'] = float(_var_var_31['Metabolic Rate']) / _var_var_22[_var_var_30]['occupancy']
+                        _var_var_22[_var_var_30]['STOA'] = float(_var_var_31['Outdoor Air']) * (_var_var_33 / float(_var_var_31['Occupancy']))
+                        _var_var_22[_var_var_30]['appliance load'] = float(_var_var_31['Appliance'])
+                        _var_var_22[_var_var_30]['DHW'] = float(_var_var_31['DHW'])
+                        _var_var_22[_var_var_30]['Envelopes'] = { }
+                        if 'South Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['S'] = self.ifEmptyEnvelope(_var_var_31['South Facing External Facade Setting'])
+                        if 'North Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['N'] = self.ifEmptyEnvelope(_var_var_31['North Facing External Facade Setting'])
+                        if 'West Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['W'] = self.ifEmptyEnvelope(_var_var_31['West Facing External Facade Setting'])
+                        if 'East Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['E'] = self.ifEmptyEnvelope(_var_var_31['East Facing External Facade Setting'])
+                        if 'Southeast Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['SE'] = self.ifEmptyEnvelope(_var_var_31['Southeast Facing External Facade Setting'])
+                        if 'Northwest Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['NW'] = self.ifEmptyEnvelope(_var_var_31['Northwest Facing External Facade Setting'])
+                        if 'Southwest Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['SW'] = self.ifEmptyEnvelope(_var_var_31['Southwest Facing External Facade Setting'])
+                        if 'Northeast Facing External Facade Setting' in list(_var_var_31.keys()):
+                            _var_var_22[_var_var_30]['Envelopes']['NE'] = self.ifEmptyEnvelope(_var_var_31['Northeast Facing External Facade Setting'])
+                        _var_var_22[_var_var_30]['Envelopes']['R'] = self.ifEmptyEnvelope(_var_var_31['Roof Setting'])
+                        _var_var_22[_var_var_30]['Envelopes']['G'] = self.ifEmptyEnvelope(_var_var_31['Ground Slab Setting'])
+                        _var_var_22[_var_var_30]['Envelopes'] = self.getEnvelopes(_var_var_22[_var_var_30]['Envelopes'], _var_var_32)
+                        _var_var_34 = np.zeros(8760)
+                        _var_var_35 = self.input_dict['Monthly Schedules'][_var_var_31['Air Infiltration Schedule']].getSchedule() if _var_var_31['Air Infiltration Schedule'] != '-' else '-'
+                        if not isinstance(_var_var_35, str):
+                            for _var_var_15 in range(len(self.wea_dict['month'])):
+                                _var_var_34[_var_var_15] = float(_var_var_35[(int(self.wea_dict['month'][_var_var_15] - 1), 0)])
+                            _var_var_22[_var_var_30]['infiltration_sched'] = np.array(_var_var_34)
+                        else:
+                            _var_var_22[_var_var_30]['infiltration_sched'] = np.ones(len(self.wea_dict['DBT']))
+                        _var_var_35 = _var_var_22[_var_var_30]['infiltration_sched']
+                        _var_var_36 = copy.deepcopy(self.wea_dict['month'])
+                        _var_var_36[np.sort(np.unique(_var_var_36, True, **('return_index',))[1])]
+                        _var_var_37 = self.input_dict['Monthly Schedules'][_var_var_31['Building Use Schedule']].getSchedule()
+                        _var_var_38 = self.input_dict['Monthly Schedules'][_var_var_31['Indoor Temperature Setpoint Schedule']].getSchedule()
+                        _var_var_39 = []
+                        _var_var_40 = []
+                        _var_var_41 = []
+                        _var_var_42 = []
+                        _var_var_43 = []
+                        _var_var_44 = []
+                        _var_var_45 = []
+                        for _var_var_15 in _var_var_36[np.sort(np.unique(_var_var_36, True, **('return_index',))[1])].astype(int):
+                            _var_var_46 = np.where(_var_var_36 == _var_var_15)
+                            _var_var_28 = self.input_dict['Building Use Schedules'][_var_var_37[_var_var_15 - 1][0]].getSchedule()
+                            _var_var_29 = self.input_dict['Indoor Temperature Setpoint Schedules'][_var_var_38[_var_var_15 - 1][0]].getSchedule()
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinueocc_sched[np.mod(_var_var_16, 24)][0][occ_sched[np.mod(_var_var_16, 24)][1]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinueocc_sched[np.mod(_var_var_16, 24)][2][occ_sched[np.mod(_var_var_16, 24)][3]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinueocc_sched[np.mod(_var_var_16, 24)][4][occ_sched[np.mod(_var_var_16, 24)][5]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinueocc_sched[np.mod(_var_var_16, 24)][6][occ_sched[np.mod(_var_var_16, 24)][7]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinueocc_sched[np.mod(_var_var_16, 24)][8][occ_sched[np.mod(_var_var_16, 24)][9]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinuetemp_sched[np.mod(_var_var_16, 24)][0][temp_sched[np.mod(_var_var_16, 24)][1]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                            None += (lambda .0: for _var_var_16 in .0:
+passcontinuetemp_sched[np.mod(_var_var_16, 24)][2][temp_sched[np.mod(_var_var_16, 24)][3]])(range(_var_var_46[0][0], _var_var_46[0][-1] + 1))
+                        _var_var_22[_var_var_30]['occupancy_frac'] = np.array(_var_var_39)
+                        _var_var_22[_var_var_30]['equipment_frac'] = np.array(_var_var_40)
+                        _var_var_22[_var_var_30]['light_frac'] = np.array(_var_var_41)
+                        _var_var_22[_var_var_30]['HVAC_frac'] = np.array(_var_var_42)
+                        _var_var_22[_var_var_30]['T_set_H'] = np.array(_var_var_43)
+                        _var_var_22[_var_var_30]['T_set_C'] = np.array(_var_var_44)
+                        _var_var_22[_var_var_30]['infiltration_frac'] = np.array(_var_var_45) * _var_var_35
+                        _var_var_22[_var_var_30]['fraction'] = (np.sum(_var_var_28, 0)[0] * 5 + np.sum(_var_var_28, 0)[1] * 2) / 168
+                        if self.input_dict['Zones'][_var_var_30]['Interior Wall Material'] == '-':
+                            _var_var_22[_var_var_30]['U_iw'] = 4
+                        else:
+                            _var_var_22[_var_var_30]['U_iw'] = Wall(self.input_dict['Internal Wall Materials'][self.input_dict['Zones'][_var_var_30]['Interior Wall Material']]).U_value
+                        if self.input_dict['Zones'][_var_var_30]['Interior Floor Material'] == '-':
+                            _var_var_22[_var_var_30]['U_if'] = 4
+                        else:
+                            _var_var_22[_var_var_30]['U_if'] = float(self.input_dict['Internal Floor Materials'][self.input_dict['Zones'][_var_var_30]['Interior Floor Material']])
+                        _var_var_22[_var_var_30]['HVAC template'] = _var_var_31['HVAC Template']
+                        if _var_var_31['HVAC Template'] not in list(self.dct['General']['HVAC_dct'].keys()):
+                            self.dct['General']['HVAC_dct'][_var_var_31['HVAC Template']] = [
+                                _var_var_30]
+                        else:
+                            self.dct['General']['HVAC_dct'][_var_var_31['HVAC Template']].append(_var_var_30)
+                        _var_var_22[_var_var_30]['HVAC'] = self.getHVAC(self.input_dict['HVAC'][_var_var_22[_var_var_30]['HVAC template']], _var_var_22[_var_var_30])
+                        if _var_var_31['Air Infiltration Level'] != '-':
+                            _var_var_22[_var_var_30]['Q4Pa'] = Infiltration_Leak_Level(self.dct['General']['building type'], int(_var_var_31['Air Infiltration Level'])).rate
+                        else:
+                            _var_var_22[_var_var_30]['Q4Pa'] = float(_var_var_31['Air Infiltration Rate'])
+                        _var_var_22[_var_var_30]['vent type'] = int(_var_var_31['Ventilation Type'])
+                        _var_var_22[_var_var_30]['window open angle'] = float(_var_var_31['Angle of Opening'])
+                        _var_var_22[_var_var_30]['night flush'] = int(_var_var_31['Night Flushing'])
+                        _var_var_22[_var_var_30]['window area open percent'] = float(_var_var_31['Window Area Open Percentage'])
+                        _var_var_22[_var_var_30]['Ventilation'] = self.getVent(_var_var_22[_var_var_30])
+                        _var_var_22[_var_var_30]['lighting template'] = _var_var_31['Lighting Template']
+                        _var_var_22[_var_var_30]['Lightings'] = self.getLightings(self.input_dict['Lighting Setting'][_var_var_22[_var_var_30]['lighting template']])
+                        _var_var_22[_var_var_30]['lighting load'] = _var_var_22[_var_var_30]['Lightings']['lighting load']
+                        _var_var_22[_var_var_30]['Fans'] = self.getFans(_var_var_22[_var_var_30])
+                        _var_var_22[_var_var_30]['adj wall zone'] = { }
+                        _var_var_22[_var_var_30]['adj floor zone'] = { }
+                        _var_var_22[_var_var_30]['adj ceiling zone'] = { }
+                        if _var_var_31['Adjacent Wall Zone Name and Contact Area'] != '-':
+                            for _var_var_47 in _var_var_31['Adjacent Wall Zone Name and Contact Area'].split(';'):
+                                _var_var_48 = _var_var_47.split(',')[0].lstrip(' ').rstrip(' ')
+                                _var_var_49 = float(_var_var_47.split(',')[1].lstrip(' ').rstrip(' ')) * _var_var_32
+                                _var_var_22[_var_var_30]['adj wall zone'][_var_var_48] = _var_var_49
+                        if _var_var_31['Adjacent Floor Zone Name and Contact Area'] != '-':
+                            for _var_var_47 in _var_var_31['Adjacent Floor Zone Name and Contact Area'].split(';'):
+                                _var_var_48 = _var_var_47.split(',')[0].lstrip(' ').rstrip(' ')
+                                _var_var_49 = float(_var_var_47.split(',')[1].lstrip(' ').rstrip(' '))
+                                _var_var_22[_var_var_30]['adj floor zone'][_var_var_48] = _var_var_49
+                        else:
+                            print('Warning: the floor of Zone %s is neither adjacent to any zone nor the ground, please review your model!!!' % _var_var_30)
+                        if _var_var_31['Adjacent Ceiling Zone Name and Contact Area'] != '-':
+                            for _var_var_47 in _var_var_31['Adjacent Ceiling Zone Name and Contact Area'].split(';'):
+                                _var_var_48 = _var_var_47.split(',')[0].lstrip(' ').rstrip(' ')
+                                _var_var_49 = float(_var_var_47.split(',')[1].lstrip(' ').rstrip(' '))
+                                _var_var_22[_var_var_30]['adj ceiling zone'][_var_var_48] = _var_var_49
+                        if 'Solar' in _var_var_31:
+                            _var_var_22[_var_var_30]['Solar'] = _var_var_31['Solar']
+                        if 'AreaFrac' in _var_var_31:
+                            _var_var_22[_var_var_30]['AreaFrac'] = _var_var_31['AreaFrac']
+                        self.dct['Zones'][_var_var_30] = SubSystem(_var_var_22[_var_var_30])
+                        self.dct['Zones'][_var_var_30].HVAC = SubSystem(self.dct['Zones'][_var_var_30].HVAC)
+                        self.dct['Zones'][_var_var_30].Ventilation = SubSystem(self.dct['Zones'][_var_var_30].Ventilation)
+                        self.dct['Zones'][_var_var_30].Lightings = SubSystem(self.dct['Zones'][_var_var_30].Lightings)
+                        self.dct['Zones'][_var_var_30].Fans = SubSystem(self.dct['Zones'][_var_var_30].Fans)
+                        self.dct['Zones'][_var_var_30].Envelopes = SubSystem(self.dct['Zones'][_var_var_30].Envelopes)
+                finally:
+                    '__pyarmor_exit_47426__(...)'
+                return None
+
+
+            
+            def getEnvelopes(self, dct, m):
+                '__pyarmor_enter_47428__(...)'
+                
+                try:
+                    _var_var_50 = { }
+                    for _var_var_51, _var_var_52 in list(self.input_dict['Window Materials'].items()):
+                        _var_var_53 = Windows(_var_var_52)
+                        _var_var_50[_var_var_51] = { }
+                        for _var_var_54, _var_var_55 in list(dct.items()):
+                            if _var_var_54 != 'G' and _var_var_55 != '-':
+                                _var_var_56 = 0
+                                for _var_var_57 in list(_var_var_55.keys()):
+                                    if _var_var_51 in _var_var_57:
+                                        _var_var_56 += 1
+                                        continue
+                                        if _var_var_56 != 0:
+                                            _var_var_58 = Shading(_var_var_55[_var_var_51 + ' Shading Type'], _var_var_55[_var_var_51 + ' Shading Where'], _var_var_55[_var_var_51 + ' Shading Control'])
+                                            _var_var_59 = [
+                                                _var_var_55[_var_var_51 + ' Area'],
+                                                _var_var_55[_var_var_51 + ' Overhang Angle'],
+                                                _var_var_55[_var_var_51 + ' Fin Angle'],
+                                                _var_var_55[_var_var_51 + ' Horizon Angle'],
+                                                _var_var_58.SRF]
+                                            if _var_var_54 == 'R':
+                                                _var_var_59.append(1)
+                                            else:
+                                                _var_var_59.append(0.5)
+                                            _var_var_59 += [
+                                                _var_var_53.U_value,
+                                                0.2,
+                                                _var_var_53.emissivity,
+                                                _var_var_53.Tsol,
+                                                11,
+                                                _var_var_53.SHGC]
+                                            _var_var_59 = np.array(_var_var_59)
+                                            _var_var_59 = np.where(_var_var_59 == '-', '0', _var_var_59).astype(float)
+                                            _var_var_59[0] *= m
+                                            _var_var_59[-4] *= 5
+                                            _var_var_50[_var_var_51][_var_var_54] = _var_var_59
+                                        else:
+                                            _var_var_50[_var_var_51][_var_var_54] = np.zeros(12)
+                                continue
+                            if _var_var_55 == '-':
+                                _var_var_50[_var_var_51][_var_var_54] = np.zeros(12)
+                                continue
+                                continue
+                                for _var_var_51, _var_var_52 in list(self.input_dict['External Wall Materials'].items()):
+                                    _var_var_4 = Wall(_var_var_52)
+                                    _var_var_50[_var_var_51] = { }
+                                    for _var_var_54, _var_var_55 in list(dct.items()):
+                                        if _var_var_54 != 'R' and _var_var_55 != '-':
+                                            _var_var_56 = 0
+                                            for _var_var_57 in list(_var_var_55.keys()):
+                                                if _var_var_51 in _var_var_57:
+                                                    _var_var_56 += 1
+                                                    continue
+                                                    if _var_var_56 != 0:
+                                                        _var_var_59 = [
+                                                            _var_var_55[_var_var_51 + ' Area']]
+                                                        _var_var_59 += [
+                                                            0.5,
+                                                            _var_var_4.U_value,
+                                                            _var_var_4.abs,
+                                                            _var_var_4.emissivity]
+                                                        _var_var_59 = np.array(_var_var_59)
+                                                        _var_var_59 = np.where(_var_var_59 == '-', '0', _var_var_59).astype(float)
+                                                        _var_var_59[0] *= m
+                                                        _var_var_59[-1] *= 5
+                                                        _var_var_50[_var_var_51][_var_var_54] = _var_var_59
+                                                    else:
+                                                        _var_var_50[_var_var_51][_var_var_54] = np.zeros(5)
+                                                elif _var_var_55 == '-':
+                                                    _var_var_50[_var_var_51][_var_var_54] = np.zeros(5)
+                                                    continue
+                                                    continue
+                                                    for _var_var_51, _var_var_52 in list(self.input_dict['Roof Materials'].items()):
+                                                        _var_var_4 = Wall(_var_var_52)
+                                                        _var_var_50[_var_var_51] = { }
+                                                        if dct['R'] != '-':
+                                                            _var_var_56 = 0
+                                                            for _var_var_57 in list(dct['R'].keys()):
+                                                                if _var_var_51 in _var_var_57:
+                                                                    _var_var_56 += 1
+                                                                    continue
+                                                                    if _var_var_56 != 0:
+                                                                        _var_var_59 = np.array([
+                                                                            dct['R'][_var_var_51 + ' Area'],
+                                                                            1,
+                                                                            _var_var_4.U_value,
+                                                                            _var_var_4.abs,
+                                                                            _var_var_4.emissivity])
+                                                                        _var_var_59 = np.where(_var_var_59 == '-', '0', _var_var_59).astype(float)
+                                                                        _var_var_59[-1] *= 5
+                                                                        _var_var_50[_var_var_51]['R'] = _var_var_59
+                                                                    else:
+                                                                        _var_var_50[_var_var_51]['R'] = np.zeros(5)
+                                                                elif dct['R'] == '-':
+                                                                    _var_var_50[_var_var_51]['R'] = np.zeros(5)
+                                                                    continue
+                                                                    for _var_var_51, _var_var_52 in list(self.input_dict['External Floor Materials'].items()):
+                                                                        _var_var_50[_var_var_51] = { }
+                                                                        if dct['G'] != '-':
+                                                                            _var_var_56 = 0
+                                                                            for _var_var_57 in list(dct['G'].keys()):
+                                                                                if _var_var_51 in _var_var_57:
+                                                                                    _var_var_56 += 1
+                                                                                    continue
+                                                                                    if _var_var_56 != 0:
+                                                                                        _var_var_59 = np.array([
+                                                                                            dct['G'][_var_var_51 + ' Area'],
+                                                                                            _var_var_52])
+                                                                                        _var_var_59 = np.where(_var_var_59 == '-', '0', _var_var_59).astype(float)
+                                                                                        _var_var_50[_var_var_51]['G'] = _var_var_59
+                                                                                    else:
+                                                                                        _var_var_50[_var_var_51]['G'] = np.zeros(2)
+                                                                                elif dct['G'] == '-':
+                                                                                    _var_var_50[_var_var_51]['G'] = np.zeros(2)
+                                                                                '__pyarmor_exit_47429__(...)'
+                                                                                return None
+                                                                                '__pyarmor_exit_47429__(...)'
+                                                                                return None
+
+
+            
+            def getHVAC(self, dct, zone_dict):
+                '__pyarmor_enter_47431__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_22['hvac_name'] = zone_dict['HVAC template']
+                    _var_var_22['reheat_summer'] = int(dct['Reheat Used in Summer'])
+                    if _var_var_22['reheat_summer'] == 2:
+                        _var_var_22['reheat_deltaT'] = 0
+                    else:
+                        _var_var_22['reheat_deltaT'] = float(dct['Reheat Temperature Delta'])
+                    _var_var_22['heating efficiency'] = float(dct['Heating Nominal Efficiency'])
+                    _var_var_22['cooling COP'] = float(dct['Cooling Nominal COP'])
+                    _var_var_22['PLV_x'] = np.array([
+                        0,
+                        0.2,
+                        0.4,
+                        0.6,
+                        0.8,
+                        1])
+                    _var_var_22['heating_PLV'] = np.array([
+                        float(dct['Heating COP0']),
+                        float(dct['Heating COP20']),
+                        float(dct['Heating COP40']),
+                        float(dct['Heating COP60']),
+                        float(dct['Heating COP80']),
+                        float(dct['Heating COP100'])])
+                    _var_var_22['cooling_PLV'] = np.array([
+                        float(dct['Cooling COP0']),
+                        float(dct['Cooling COP20']),
+                        float(dct['Cooling COP40']),
+                        float(dct['Cooling COP60']),
+                        float(dct['Cooling COP80']),
+                        float(dct['Cooling COP100'])])
+                    _var_var_60 = HVAC_Sys(int(dct['HVAC System Type']))
+                    _var_var_22['f_waste'] = _var_var_60.f_waste
+                    _var_var_22['a_heat'] = _var_var_60.a_heat
+                    _var_var_22['a_cool'] = _var_var_60.a_cool
+                    _var_var_22['T_set_H'] = np.amax(zone_dict['T_set_H'])
+                    _var_var_22['T_set_C'] = np.amin(zone_dict['T_set_C'])
+                    if dct['Heating Capacity'] == '-':
+                        _var_var_22['heat_cap'] = float('inf')
+                    else:
+                        
+                        try:
+                            _var_var_22['heat_cap'] = float(dct['Heating Capacity'])
+                        finally:
+                            pass
+                        print('Please input valid value for heating capacity!')
+                        if dct['Cooling Capacity'] == '-':
+                            _var_var_22['cool_cap'] = float('inf')
+                        else:
+                            
+                            try:
+                                _var_var_22['cool_cap'] = float(dct['Cooling Capacity'])
+                            finally:
+                                pass
+                            print('Please input valid value for cooling capacity!')
+                            if dct['Design Heating Supply Air Temperature'] == '-':
+                                _var_var_22['T_supply_H'] = _var_var_22['T_set_H'] + 7
+                            else:
+                                
+                                try:
+                                    _var_var_22['T_supply_H'] = float(dct['Design Heating Supply Air Temperature'])
+                                finally:
+                                    pass
+                                print('Please input valid value for heating supply air temperature!')
+                                if dct['Design Cooling Supply Air Temperature'] == '-':
+                                    _var_var_22['T_supply_C'] = _var_var_22['T_set_C'] - 7
+                                else:
+                                    
+                                    try:
+                                        _var_var_22['T_supply_C'] = float(dct['Design Cooling Supply Air Temperature'])
+                                    finally:
+                                        pass
+                                    print('Please input valid value for heating supply air temperature!')
+                                    _var_var_61 = Heat_Recovery_Sys(int(dct['Heat Recovery Type']))
+                                    _var_var_22['HR_eff'] = _var_var_61.HR_eff
+                                    _var_var_62 = Exhaust_Air_Recirculation(int(dct['Exhaust Air Recirculation Type']))
+                                    _var_var_22['fcntrl'] = _var_var_62.factor
+                                    _var_var_22['fan_power'] = float(dct['Specific Fan Power'])
+                                    _var_var_22['fan_flow_control_factor'] = float(dct['Fan Flow Control Factor'])
+                                    
+                                    try:
+                                        _var_var_22['T_Swater_H'] = float(dct['Design Heating Hot Water Supply Temperature'])
+                                    finally:
+                                        pass
+                                    _var_var_22['T_Swater_H'] = 0
+                                    
+                                    try:
+                                        _var_var_22['T_Swater_C'] = float(dct['Design Cooling Chilled Water Supply Temperature'])
+                                    finally:
+                                        pass
+                                    _var_var_22['T_Swater_C'] = 0
+                                    
+                                    try:
+                                        _var_var_22['T_Rwater_H'] = float(dct['Design Heating Hot Water Return Temperature'])
+                                    finally:
+                                        pass
+                                    _var_var_22['T_Rwater_H'] = 0
+                                    
+                                    try:
+                                        _var_var_22['T_Rwater_C'] = float(dct['Design Cooling Chilled Water Return Temperature'])
+                                    finally:
+                                        pass
+                                    _var_var_22['T_Rwater_C'] = 0
+                                    '__pyarmor_exit_47432__(...)'
+                                    return _var_var_22
+                                    '__pyarmor_exit_47432__(...)'
+                                    return None
+
+
+
+
+
+
+
+
+
+
+            
+            def getVent(self, zone_dict):
+                '__pyarmor_enter_47434__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_22['height'] = zone_dict['height']
+                    _var_var_22['volume'] = zone_dict['Af'] * zone_dict['height']
+                    _var_var_22['vent type'] = int(zone_dict['vent type'])
+                    if _var_var_22['vent type'] == 3:
+                        _var_var_22['MV_sched'] = np.zeros(zone_dict['occupancy_frac'].shape)
+                    else:
+                        _var_var_22['MV_sched'] = np.where(zone_dict['occupancy_frac'] > 0, 1, 0.001)
+                    _var_var_22['qv_min'] = 30 * zone_dict['occupants'] / zone_dict['Af']
+                    if self.input_dict['Basics']['Building Type'] == '1':
+                        _var_var_22['min_ACH'] = 0.3
+                    elif self.input_dict['Basics']['Building Type'] == '2' or self.input_dict['Basics']['Building Type'] == '3':
+                        _var_var_22['min_ACH'] = (_var_var_22['qv_min'] / _var_var_22['volume']) * zone_dict['Af']
+                    else:
+                        raise ValueError('Please have the right input for the specification of building type.')
+                    _var_var_22['supply'] = zone_dict['STOA'] * 3.6 / zone_dict['Af']
+                    _var_var_22['exhaust'] = zone_dict['STOA'] * 3.6 / zone_dict['Af']
+                    _var_var_22['fraction'] = zone_dict['fraction']
+                    _var_var_22['HR_eff'] = zone_dict['HVAC']['HR_eff']
+                    _var_var_22['fcntrl'] = zone_dict['HVAC']['fcntrl']
+                    _var_var_22['vsite'] = Terrain_Class(int(self.input_dict['Basics']['Terrain Class'])).vsite
+                    _var_var_22['flow_rate'] = (zone_dict['Q4Pa'] / zone_dict['Af']) * _var_var_22['volume']
+                    _var_var_22['dCP'] = 0.75
+                    _var_var_63 = Natural_Ventilation(_var_var_22['vent type'], zone_dict['window open angle'], zone_dict['night flush'], zone_dict['occupancy_frac'])
+                    _var_var_64 = sum((lambda .0: [ np.sum(np.array(list(_var_var_65.values())), 0, **('axis',))[0] for _var_var_0, _var_var_65 in .0 if len(np.transpose(np.array(list(_var_var_65.values())))) == 12 ])(list(zone_dict['Envelopes'].items())))
+                    _var_var_22['Aw'] = _var_var_64 * zone_dict['window area open percent'] / 100
+                    _var_var_22['ca'] = _var_var_63.ca
+                    _var_var_22['Ck'] = _var_var_63.Ck
+                    _var_var_22['Aow'] = _var_var_63.Ck * _var_var_22['Aw']
+                    _var_var_22['total_window_area'] = _var_var_64
+                    _var_var_22['NV_sched'] = _var_var_63.NV_sched
+                    _var_var_22['NV_type'] = _var_var_63.cls_type
+                finally:
+                    '__pyarmor_exit_47435__(...)'
+                    return None
+                    '__pyarmor_exit_47435__(...)'
+                    return None
+
+
+            
+            def getLightings(self, dct):
+                '__pyarmor_enter_47437__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_22['lighting load'] = float(dct['Lighting Load'])
+                    if dct['Parasitic Lighting Energy'] == '-':
+                        _var_var_22['W_pc'] = 6
+                    else:
+                        _var_var_22['W_pc'] = float(dct['Parasitic Lighting Energy'])
+                    _var_var_22['P_pc'] = _var_var_22['W_pc'] * 1000 / 8760
+                    _var_var_22['F_D'] = float(dct['Daylighting Factor'])
+                    _var_var_22['F_O'] = float(dct['Lighting Occupancy Factor'])
+                    _var_var_22['F_c'] = float(dct['Lighting Illumination Control Factor'])
+                    _var_var_22['lighting load'] *= _var_var_22['F_D'] * _var_var_22['F_O'] * _var_var_22['F_c']
+                finally:
+                    '__pyarmor_exit_47438__(...)'
+                    return None
+                    '__pyarmor_exit_47438__(...)'
+                    return None
+
+
+            
+            def getFans(self, zone_dict):
+                '__pyarmor_enter_47440__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_22['T_supply_H'] = zone_dict['HVAC']['T_supply_H']
+                    _var_var_22['T_supply_C'] = zone_dict['HVAC']['T_supply_C']
+                    _var_var_22['rho'] = Fan().rho
+                    _var_var_22['fraction'] = zone_dict['fraction']
+                    _var_var_22['supply_air_flow'] = zone_dict['STOA']
+                    _var_var_22['exhaust_air_flow'] = zone_dict['STOA']
+                    _var_var_22['fan_power'] = float(zone_dict['HVAC']['fan_power'])
+                    _var_var_22['fan_flow_control_factor'] = float(zone_dict['HVAC']['fan_flow_control_factor'])
+                    self.BEM = BEM_Sys(int(self.input_dict['BEM']['BEM Type']))
+                    self.dct['BEM'] = { }
+                    self.dct['BEM']['f_BAC_e'] = self.BEM.f_BAC_e
+                    self.dct['BEM']['f_BAC_hc'] = self.BEM.f_BAC_hc
+                finally:
+                    '__pyarmor_exit_47441__(...)'
+                    return None
+                    '__pyarmor_exit_47441__(...)'
+                    return None
+
+
+            
+            def getPumps(self):
+                '__pyarmor_enter_47443__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    
+                    try:
+                        _var_var_22['pump_power_H'] = float(self.input_dict['Pumps']['Heating Use Pump Power Per Water Flow Rate'])
+                    finally:
+                        pass
+                    _var_var_22['pump_power_H'] = 0
+                    
+                    try:
+                        _var_var_22['pump_power_C'] = float(self.input_dict['Pumps']['Cooling Use Pump Power Per Water Flow Rate'])
+                    finally:
+                        pass
+                    _var_var_22['pump_power_C'] = 0
+                    
+                    try:
+                        _var_var_22['pump_power_D'] = float(self.input_dict['Pumps']['DHW Use Pump Power Per Water Flow Rate'])
+                    finally:
+                        pass
+                    _var_var_22['pump_power_D'] = 0
+                    _var_var_22['DHW_flow'] = float(self.input_dict['Pumps']['DHW Use Peak Flow Rate'])
+                    _var_var_66 = Pump_Sys(int(self.input_dict['Pumps']['Pump Control Type']))
+                    _var_var_22['fcntrl'] = _var_var_66.factor
+                    _var_var_22['rho'] = _var_var_66.rho
+                    self.dct['Pumps'] = _var_var_22
+                    '__pyarmor_exit_47444__(...)'
+                    '__pyarmor_exit_47444__(...)'
+                    return None
+
+
+
+
+
+            
+            def getDHW(self):
+                '__pyarmor_enter_47446__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_67 = DHW_Sys(int(self.input_dict['DHW']['DHW Distribution System']), int(self.input_dict['DHW']['DHW Generation System']))
+                    _var_var_22['dstr_eff'] = _var_var_67.distr_eff
+                    _var_var_22['gen_eff'] = _var_var_67.sys_eff
+                    _var_var_22['SWH Area'] = float(self.input_dict['SWH']['SWH Area'])
+                    _var_var_22['SWH Orientation'] = self.input_dict['SWH']['SWH Orientation']
+                    _var_var_22['SWH Angle'] = float(self.input_dict['SWH']['SWH Angle'])
+                    self.dct['DHW'] = _var_var_22
+                finally:
+                    '__pyarmor_exit_47447__(...)'
+                return None
+
+
+            
+            def getPV(self):
+                '__pyarmor_enter_47449__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_22['PV Area'] = float(self.input_dict['PV']['PV Surface Area'])
+                    _var_var_68 = PV_Sys(int(self.input_dict['PV']['PV Type']), int(self.input_dict['PV']['PV Ventilation Type']))
+                    _var_var_22['Kpk'] = _var_var_68.Kpk
+                    _var_var_22['fperf'] = _var_var_68.fperf
+                    _var_var_22['Ppk'] = _var_var_22['Kpk'] * _var_var_22['PV Area']
+                    _var_var_22['Orientation'] = self.input_dict['PV']['PV Orientation']
+                    _var_var_22['PV Angle'] = self.input_dict['PV']['PV Angle']
+                    self.dct['PV'] = _var_var_22
+                finally:
+                    '__pyarmor_exit_47450__(...)'
+                return None
+
+
+            
+            def getWindSys(self):
+                '__pyarmor_enter_47452__(...)'
+                
+                try:
+                    _var_var_22 = { }
+                    _var_var_22['Multiplier'] = int(self.input_dict['Wind Turbines']['Wind Turbine Number'])
+                    _var_var_22['Diameter'] = float(self.input_dict['Wind Turbines']['Wind Turbine Diameter'])
+                    _var_var_22['Swept Area'] = 0.25 * _var_var_22['Diameter'] ** 2 * np.pi
+                    _var_var_22['Efficiency'] = float(self.input_dict['Wind Turbines']['Wind Turbine Efficiency'])
+                    _var_var_22['R_air'] = 287
+                    self.dct['Wind_Turbines'] = _var_var_22
+                finally:
+                    '__pyarmor_exit_47453__(...)'
+                return None
+
+
+            
+            def getDict(self):
+                '__pyarmor_enter_47455__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47456__(...)'
+                    return None
+                    '__pyarmor_exit_47456__(...)'
+                    return None
+
+
+            
+            def printDict(self):
+                '__pyarmor_enter_47458__(...)'
+                
+                try:
+                    for _var_var_0, _var_var_1 in list(self.dct.items()):
+                        print((_var_var_0, _var_var_1, '\n'))
+                finally:
+                    '__pyarmor_exit_47459__(...)'
+                return None
+
+
+        finally:
+            '__pyarmor_exit_47414__(...)'
+        return None
+
+
+    
+    class SubSystem:
+        '__pyarmor_enter_47461__(...)'
+        
+        try:
+            
+            def __init__(self, dictionary):
+                '__pyarmor_enter_47464__(...)'
+                
+                try:
+                    for _var_var_69, _var_var_70 in list(dictionary.items()):
+                        setattr(self, _var_var_69.replace(' ', '_'), _var_var_70)
+                finally:
+                    '__pyarmor_exit_47465__(...)'
+                return None
+
+
+        finally:
+            '__pyarmor_exit_47462__(...)'
+        return None
+
+
+finally:
+    '__pyarmor_exit_47144__(...)'
+return None
+

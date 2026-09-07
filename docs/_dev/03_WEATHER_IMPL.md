@@ -8,7 +8,7 @@
 
 结构无法解释时抛出具体异常；可以定位的气象值问题记录在报告中，不替换为零。命令行打印 JSON 后，若所检字段存在缺测、无效值或上述跨字段诊断，则退出码为 1；否则正常退出。文件读取/编码/结构异常直接失败退出。`Line` 和 `*_lines` 是包含八条头记录的 CSV 记录号；字段 `column` 从 1 开始。没有有效值的字段最小/最大值为 `None`。
 
-`calendar_order_verified` 只说明月/日/小时连续，`engine_compatibility_verified` 固定为 false。用于检查顺序的参考年不会写回文件，不决定工作日、模拟年或引擎时间轴。该工具使用仓库 Python 3.13；不要将其未经适配装入 Rhino 的 Python 3.9 环境。
+`calendar_order_verified` 只说明月/日/小时连续，`engine_compatibility_verified` 固定为 false。用于检查顺序的参考年不会写回文件，不决定工作日、模拟年或引擎时间轴。该工具与仓库开发环境统一使用 Python 3.9.11；仍属于离线检查工具，不作为 GH 正式天气加载器。可空数值使用 `Optional[float]`，头记录数量已预先检查，因此不使用 Python 3.10 才提供的 `zip(strict=True)`。
 
 定位：[tools/audit_weather.py](../../tools/audit_weather.py)
 
@@ -25,7 +25,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Final
+from typing import Final, Optional
 
 
 @dataclass(frozen=True)
@@ -35,7 +35,7 @@ class FieldRule:
     unit: str
     missing_at: float
     minimum: float
-    maximum: float | None
+    maximum: Optional[float]
     inclusive_bounds: bool = True
 
 
@@ -62,8 +62,8 @@ class FieldAudit:
     column: int
     name: str
     unit: str
-    minimum: float | None
-    maximum: float | None
+    minimum: Optional[float]
+    maximum: Optional[float]
     missing_lines: tuple[int, ...]
     invalid_lines: tuple[int, ...]
 
@@ -110,7 +110,7 @@ def audit_weather(path: Path) -> WeatherAudit:
     if len(records) < 8:
         raise ValueError("EPW requires eight header records")
     for line_number, (row, expected) in enumerate(
-        zip(records[:8], expected_headers, strict=True), start=1
+        zip(records[:8], expected_headers), start=1
     ):
         if not row or row[0] != expected:
             raise ValueError(f"Line {line_number}: expected {expected}")

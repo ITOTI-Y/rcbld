@@ -1,0 +1,16 @@
+{
+  "python": "3.9.11 (main, Mar 18 2022, 20:15:41) \n[Clang 13.0.1 ]",
+  "extractor_sha256": "bc42babed03605152b0b241a7a3405b182e1654c6d01e31ab2b86708e5842d88",
+  "positive_extraction": "PASS",
+  "five_wrappers_equal_first_extraction": true,
+  "existing_output_rejected_without_changes": true,
+  "wrong_release_rejected_before_output": true,
+  "manifest_files_verified": 28,
+  "original_zip_and_epw_unchanged": true,
+  "installed_skill_adapter_hash_matches": true,
+  "key_material_excluded": true,
+  "relative_links_checked": 58,
+  "unexpected_missing_links": [],
+  "preexisting_manual_implementation_targets": [],
+  "engine_executed": false
+}

@@ -1,0 +1,108 @@
+{
+  "observed_at": "2026-09-07T10:10:39.283910+00:00",
+  "engine_executed": false,
+  "decompiler_validation_python": "3.12.3",
+  "modules": [
+    {
+      "module": "RCBldEng",
+      "code_objects": 5,
+      "disassembly_bytes": 31587,
+      "draft_bytes": 63,
+      "source_compiles": true,
+      "function_definitions": 0
+    },
+    {
+      "module": "lib",
+      "code_objects": 119,
+      "disassembly_bytes": 1015987,
+      "draft_bytes": 112197,
+      "source_compiles": false,
+      "syntax_error": "expected 'except' or 'finally' block",
+      "syntax_error_line": 45
+    },
+    {
+      "module": "weather",
+      "code_objects": 19,
+      "disassembly_bytes": 189883,
+      "draft_bytes": 17890,
+      "source_compiles": false,
+      "syntax_error": "invalid syntax",
+      "syntax_error_line": 73
+    },
+    {
+      "module": "simulation",
+      "code_objects": 45,
+      "disassembly_bytes": 698868,
+      "draft_bytes": 70555,
+      "source_compiles": false,
+      "syntax_error": "cannot assign to None",
+      "syntax_error_line": 120
+    },
+    {
+      "module": "comfort",
+      "code_objects": 8,
+      "disassembly_bytes": 120351,
+      "draft_bytes": 13202,
+      "source_compiles": false,
+      "syntax_error": "expected 'except' or 'finally' block",
+      "syntax_error_line": 234
+    }
+  ],
+  "total_code_objects": 196,
+  "warning_or_error_lines": 209,
+  "key_log_lines_redacted": 1,
+  "reproduction": {
+    "exit_code": 0,
+    "command": [
+      "/tmp/rcbld-engine-recovery-ztr2pgfl/uv-cache/builds-v0/.tmpNDQu9L/bin/python",
+      "/tmp/rcbld-engine-recovery-ztr2pgfl/pyarmor-static-unpack/oneshot/shot.py",
+      "/tmp/rcbld-engine-recovery-ztr2pgfl/reproduction/input",
+      "-r",
+      "/tmp/rcbld-engine-recovery-ztr2pgfl/reproduction/pyarmor_runtime.pyd",
+      "-o",
+      "/tmp/rcbld-engine-recovery-ztr2pgfl/reproduction/recovered",
+      "--concurrent",
+      "1",
+      "--no-banner",
+      "--unhide-all-noisy-logs"
+    ],
+    "disassembly_comparison": [
+      {
+        "file": "RCBldEng.pyc.1shot.das",
+        "sha256": "1235074886120e207d59ce715ba53e5586515aae90b4fea8518c033a3e13e5b3",
+        "identical": true
+      },
+      {
+        "file": "comfort.pyc.1shot.das",
+        "sha256": "65576c137c86df269992cad4bccdfb041dd3673f038defd9718448f0e41fd8ce",
+        "identical": true
+      },
+      {
+        "file": "lib.pyc.1shot.das",
+        "sha256": "14e87ded7776223003da8c1bbc49592fe03d42199e537a0997f004c94295de60",
+        "identical": true
+      },
+      {
+        "file": "simulation.pyc.1shot.das",
+        "sha256": "9a5c011fcc65e3cb6c5667946054483488433a11faa0d7bafeaf688398f2be74",
+        "identical": true
+      },
+      {
+        "file": "weather.pyc.1shot.das",
+        "sha256": "fe5591ff233994b50ab0aa07258f71ec8c4442ed430284eddab3dcad8c0df3e3",
+        "identical": true
+      }
+    ]
+  },
+  "searched_business_disassembly_literals": {
+    ".sol": 12,
+    "Solar_OP": 0,
+    "Solar_W": 0
+  },
+  "unverified": [
+    "original engine execution",
+    "numeric equivalence",
+    "decompiler correctness",
+    "full parser semantics"
+  ]
+}

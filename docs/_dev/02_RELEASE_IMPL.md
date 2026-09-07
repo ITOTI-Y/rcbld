@@ -2,7 +2,7 @@
 
 ## [CREATE] 建立开发工具包
 
-为后续离线检查提供明确的导入入口，新增以下完整文件。该包用于仓库开发环境，不安装到 Rhino，也不导入引擎内部模块。
+为后续离线检查提供明确的导入入口，新增以下完整文件。该包使用已确定的 Python 3.9.11 开发环境，不安装到 Rhino，也不导入引擎内部模块。
 
 定位：[tools/__init__.py](../../tools/__init__.py)
 
@@ -14,7 +14,7 @@
 
 为防止把其他版本当作本次重构基准，新增以下完整文件。先检查用户指定 ZIP 的 SHA-256，再检查 CRC、内层 EXE、三个必要 PE 文件的 x64 标记和 PyInstaller Python 元数据。输入是 ZIP 路径，输出为 `ReleaseAudit`；命令行输出 JSON，身份不符或解析失败直接以异常失败退出。
 
-此工具只接受固定指纹的发布包，不负责安装或任意版本兼容。`execution_verified=False` 表示未执行引擎；静态完整性不能证明新版协议或数值行为。程序不解包、不改写源文件，也不绕过业务模块保护。CRC 接口与容器元数据分别依据 [Python zipfile](https://docs.python.org/3.13/library/zipfile.html) 和 [PyInstaller 读取器](https://raw.githubusercontent.com/pyinstaller/pyinstaller/develop/PyInstaller/archive/readers.py)。
+此工具只接受固定指纹的发布包，不负责安装或任意版本兼容。`execution_verified=False` 表示未执行引擎；静态完整性不能证明新版协议或数值行为。程序不解包、不改写源文件，也不绕过业务模块保护。CRC 接口与容器元数据分别依据 [Python zipfile](https://docs.python.org/3.9/library/zipfile.html) 和 [PyInstaller 读取器](https://raw.githubusercontent.com/pyinstaller/pyinstaller/develop/PyInstaller/archive/readers.py)。
 
 定位：[tools/audit_release.py](../../tools/audit_release.py)
 

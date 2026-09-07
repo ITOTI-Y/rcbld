@@ -1,0 +1,268 @@
+'''
+Optimized version of the CBE Comfort tool comfort models.
+'''
+'__pyarmor_enter_47467__(...)'
+
+try:
+    import numpy as np
+    
+    def findSaturatedVaporPressureTorr(T):
+        '__pyarmor_enter_47470__(...)'
+        
+        try:
+            pass
+        finally:
+            '__pyarmor_exit_47471__(...)'
+            return None
+            '__pyarmor_exit_47471__(...)'
+            return None
+
+
+    
+    def comfPMVElevatedAirspeed(ta, tr, vel, rh, met, clo, wme):
+        '__pyarmor_enter_47473__(...)'
+        
+        try:
+            _var_var_0 = comfPierceSET(ta, tr, vel, rh, met, clo, wme)
+            _var_var_1 = 0.1
+            
+            def _var_var_2(a, b, epsilon):
+                '__pyarmor_enter_47476__(...)'
+                
+                try:
+                    
+                    def _var_var_7(t):
+                        '__pyarmor_enter_47479__(...)'
+                        
+                        try:
+                            pass
+                        finally:
+                            '__pyarmor_exit_47480__(...)'
+                            return None
+                            '__pyarmor_exit_47480__(...)'
+                            return None
+
+
+                    _var_var_8 = _var_var_7(a)
+                finally:
+                    '__pyarmor_exit_47477__(...)'
+                    return None
+                    '__pyarmor_exit_47477__(...)'
+                    return None
+
+
+            if np.all(vel <= _var_var_1):
+                (_var_var_3, _var_var_4) = comfPMV(ta, tr, vel, rh, met, clo, wme)
+                _var_var_5 = ta
+                _var_var_6 = np.zeros_like(ta)
+            else:
+                _var_var_6 = _var_var_2(np.zeros_like(ta), np.full_like(ta, 40), 0.001)
+                (_var_var_3, _var_var_4) = comfPMV(ta - _var_var_6, tr - _var_var_6, _var_var_1, rh, met, clo, wme)
+                _var_var_5 = ta - _var_var_6
+        finally:
+            '__pyarmor_exit_47474__(...)'
+            return None
+            '__pyarmor_exit_47474__(...)'
+            return None
+
+
+    
+    def comfPMV(ta, tr, vel, rh, met, clo, wme):
+        '__pyarmor_enter_47482__(...)'
+        
+        try:
+            _var_var_9 = rh * 10 * np.exp(16.6536 - 4030.18 / (ta + 235))
+            _var_var_10 = 0.155 * clo
+            _var_var_11 = met * 58.15
+            _var_var_12 = wme * 58.15
+            _var_var_13 = _var_var_11 - _var_var_12
+            _var_var_14 = np.where(_var_var_10 <= 0.078, 1 + 1.29 * _var_var_10, 1.05 + 0.645 * _var_var_10)
+            _var_var_15 = 12.1 * np.sqrt(vel)
+            _var_var_16 = ta + 273
+            _var_var_17 = tr + 273
+            _var_var_18 = _var_var_16 + (35.5 - ta) / (3.5 * _var_var_10 + 0.1)
+            _var_var_19 = _var_var_10 * _var_var_14
+            _var_var_20 = _var_var_19 * 3.96
+            _var_var_21 = _var_var_19 * 100
+            _var_var_22 = _var_var_19 * _var_var_16
+            _var_var_23 = (308.7 - 0.028 * _var_var_13) + _var_var_20 * np.power(_var_var_17 / 100, 4)
+            _var_var_24 = _var_var_18 / 100
+            _var_var_25 = _var_var_18 / 50
+            _var_var_26 = 0
+            _var_var_27 = 0.00015
+            if np.any(np.abs(_var_var_24 - _var_var_25) > _var_var_27) and _var_var_26 < 150:
+                _var_var_25 = (_var_var_25 + _var_var_24) / 2
+                _var_var_28 = 2.38 * np.power(np.abs(100 * _var_var_25 - _var_var_16), 0.25)
+                _var_var_29 = np.where(_var_var_15 > _var_var_28, _var_var_15, _var_var_28)
+                _var_var_24 = (_var_var_23 + _var_var_22 * _var_var_29 - _var_var_20 * np.power(_var_var_25, 4)) / (100 + _var_var_21 * _var_var_29)
+                _var_var_26 += 1
+                continue
+            _var_var_30 = 100 * _var_var_24 - 273
+            _var_var_31 = 0.00305 * (5733 - 6.99 * _var_var_13 - _var_var_9)
+            _var_var_32 = np.where(_var_var_13 > 58.15, 0.42 * (_var_var_13 - 58.15), 0)
+            _var_var_33 = 1.7e-05 * _var_var_11 * (5867 - _var_var_9)
+            _var_var_34 = 0.0014 * _var_var_11 * (34 - ta)
+            _var_var_35 = 3.96 * _var_var_14 * (np.power(_var_var_24, 4) - np.power(_var_var_17 / 100, 4))
+            _var_var_36 = _var_var_14 * _var_var_29 * (_var_var_30 - ta)
+            _var_var_37 = 0.303 * np.exp(-0.036 * _var_var_11) + 0.028
+            _var_var_3 = _var_var_37 * (_var_var_13 - _var_var_31 - _var_var_32 - _var_var_33 - _var_var_34 - _var_var_35 - _var_var_36)
+            _var_var_4 = 100 - 95 * np.exp(-0.03353 * np.power(_var_var_3, 4) - 0.2179 * np.power(_var_var_3, 2))
+        finally:
+            '__pyarmor_exit_47483__(...)'
+            return None
+            '__pyarmor_exit_47483__(...)'
+            return None
+
+
+    
+    def comfPierceSET(ta, tr, vel, rh, met, clo, wme):
+        '__pyarmor_enter_47485__(...)'
+        
+        try:
+            _var_var_38 = rh * findSaturatedVaporPressureTorr(ta) / 100
+            _var_var_39 = np.maximum(vel, 0.1)
+            _var_var_40 = 0.25
+            _var_var_41 = 69.9
+            _var_var_42 = 1.8258
+            _var_var_43 = 58.2
+            _var_var_44 = 5.6697e-08
+            _var_var_45 = 170
+            _var_var_46 = 120
+            _var_var_47 = 0.5
+            _var_var_48 = 33.7
+            _var_var_49 = 36.49
+            _var_var_50 = 36.49
+            _var_var_51 = 6.3
+            _var_var_52 = _var_var_48
+            _var_var_53 = _var_var_49
+            _var_var_54 = _var_var_51
+            _var_var_55 = 0
+            _var_var_56 = 0.1
+            _var_var_57 = 0.1 * met
+            _var_var_58 = 101.325
+            _var_var_59 = _var_var_58 * 0.009869
+            _var_var_60 = 60
+            _var_var_61 = _var_var_60 / 60
+            _var_var_62 = 0.155 * clo
+            _var_var_63 = 1 + 0.15 * clo
+            _var_var_64 = 2.2 / _var_var_59
+            _var_var_65 = met * _var_var_43
+            _var_var_66 = met * _var_var_43
+            _var_var_67 = np.where(clo <= 0, 0.38 * np.power(_var_var_39, -0.29), 0.59 * np.power(_var_var_39, -0.08))
+            _var_var_68 = np.where(clo <= 0, 1, 0.45)
+            _var_var_69 = np.maximum(3 * np.power(_var_var_59, 0.53), 8.6 * np.power(_var_var_39 * _var_var_59, 0.53))
+            _var_var_70 = 4.7
+            _var_var_71 = _var_var_70 + _var_var_69
+            _var_var_72 = 1 / (_var_var_63 * _var_var_71)
+            _var_var_73 = (_var_var_70 * tr + _var_var_69 * ta) / _var_var_71
+            _var_var_74 = _var_var_73 + (_var_var_52 - _var_var_73) / (_var_var_71 * (_var_var_72 + _var_var_62))
+            for _var_var_75 in range(_var_var_60):
+                _var_var_76 = (_var_var_52 - _var_var_73) / (_var_var_72 + _var_var_62)
+                _var_var_77 = (_var_var_53 - _var_var_52) * (5.28 + 1.163 * _var_var_54)
+                _var_var_78 = 0.0023 * _var_var_66 * (44 - _var_var_38)
+                _var_var_79 = 0.0014 * _var_var_66 * (34 - ta)
+                _var_var_80 = _var_var_66 - _var_var_77 - _var_var_78 - _var_var_79 - wme
+                _var_var_81 = _var_var_77 - _var_var_76 - _var_var_57
+                _var_var_82 = 0.97 * _var_var_56 * _var_var_41
+                _var_var_83 = 0.97 * (1 - _var_var_56) * _var_var_41
+                _var_var_84 = _var_var_81 * _var_var_42 / (_var_var_82 * 60)
+                _var_var_85 = _var_var_80 * _var_var_42 / (_var_var_83 * 60)
+                _var_var_52 = _var_var_52 + _var_var_84
+                _var_var_53 = _var_var_53 + _var_var_85
+                _var_var_86 = _var_var_56 * _var_var_52 + (1 - _var_var_56) * _var_var_53
+                _var_var_87 = _var_var_52 - _var_var_48
+                _var_var_88 = np.maximum(0, _var_var_87)
+                _var_var_89 = np.maximum(0, -_var_var_87)
+                _var_var_90 = _var_var_53 - _var_var_49
+                _var_var_91 = np.maximum(0, _var_var_90)
+                _var_var_92 = np.maximum(0, -_var_var_90)
+                _var_var_93 = _var_var_86 - _var_var_50
+                _var_var_94 = np.maximum(0, _var_var_93)
+                _var_var_95 = np.maximum(0, -_var_var_93)
+                _var_var_54 = np.clip((_var_var_51 + _var_var_46 * _var_var_91) / (1 + _var_var_47 * _var_var_89), 0.5, 90)
+                _var_var_96 = np.clip(_var_var_45 * _var_var_94 * np.exp(_var_var_88 / 10.7), None, 500)
+                _var_var_97 = 0.68 * _var_var_96
+                _var_var_98 = 1 / (_var_var_64 * _var_var_63 * _var_var_69)
+                _var_var_99 = _var_var_62 / (_var_var_64 * _var_var_68)
+                _var_var_100 = (findSaturatedVaporPressureTorr(_var_var_52) - _var_var_38) / (_var_var_98 + _var_var_99)
+                _var_var_101 = _var_var_97 / _var_var_100
+                _var_var_102 = np.clip(0.06 + 0.94 * _var_var_101, None, _var_var_67)
+                _var_var_103 = _var_var_102 * _var_var_100 - _var_var_97
+                _var_var_57 = np.clip(_var_var_97 + _var_var_103, None, _var_var_100)
+                _var_var_55 = 19.4 * _var_var_89 * _var_var_92
+                _var_var_66 = _var_var_65 + _var_var_55
+                _var_var_56 = 0.0417737 + 0.745183 / (_var_var_54 + 0.585417)
+            _var_var_104 = _var_var_76 + _var_var_57
+            _var_var_105 = _var_var_66 - wme
+            _var_var_106 = np.maximum(0, 0.42 * (_var_var_105 - 1 * _var_var_43))
+            _var_var_100 = _var_var_100 * _var_var_67
+            _var_var_107 = _var_var_102
+            _var_var_108 = findSaturatedVaporPressureTorr(_var_var_52)
+            _var_var_109 = _var_var_70
+            _var_var_110 = np.where(met < 0.85, 3, np.maximum(3, 5.66 * np.power(met - 0.85, 0.39)))
+            _var_var_110 = _var_var_110 + _var_var_109
+            _var_var_111 = 1.52 / ((met - wme / _var_var_43) + 0.6944) - 0.1835
+            _var_var_112 = 0.155 * _var_var_111
+            _var_var_113 = 1 + _var_var_40 * _var_var_111
+            _var_var_114 = 1 / (1 + 0.155 * _var_var_113 * _var_var_110 * _var_var_111)
+            _var_var_115 = 0.45
+            _var_var_116 = (_var_var_115 * _var_var_110 / _var_var_110) * (1 - _var_var_114) / (_var_var_110 / _var_var_110 - _var_var_114 * _var_var_115)
+            _var_var_117 = 1 / (_var_var_113 * _var_var_110)
+            _var_var_118 = 1 / (_var_var_64 * _var_var_113 * _var_var_110)
+            _var_var_119 = _var_var_112 / (_var_var_64 * _var_var_116)
+            _var_var_120 = 1 / (_var_var_117 + _var_var_112)
+            _var_var_121 = 1 / (_var_var_118 + _var_var_119)
+            _var_var_122 = 0.0001
+            _var_var_123 = _var_var_52 - _var_var_104 / _var_var_120
+            _var_var_124 = _var_var_123
+            for _var_var_75 in range(100):
+                _var_var_125 = _var_var_104 - _var_var_120 * (_var_var_52 - _var_var_123) - _var_var_107 * _var_var_121 * (_var_var_108 - 0.5 * findSaturatedVaporPressureTorr(_var_var_123))
+                _var_var_126 = _var_var_104 - _var_var_120 * (_var_var_52 - (_var_var_123 + _var_var_122)) - _var_var_107 * _var_var_121 * (_var_var_108 - 0.5 * findSaturatedVaporPressureTorr(_var_var_123 + _var_var_122))
+                _var_var_124 = _var_var_123 - _var_var_122 * _var_var_125 / (_var_var_126 - _var_var_125)
+                _var_var_127 = _var_var_124 - _var_var_123
+                _var_var_123 = _var_var_124
+                if np.all(np.abs(_var_var_127) <= 0.01):
+                    pass
+                
+            '__pyarmor_exit_47486__(...)'
+            return _var_var_124
+            '__pyarmor_exit_47486__(...)'
+            return None
+
+
+    
+    def calcHumidRatio(airTemp, relHumid, barPress):
+        '__pyarmor_enter_47488__(...)'
+        
+        try:
+            _var_var_128 = np.array(airTemp) + 273
+            _var_var_129 = np.where(_var_var_128 >= 273, 1 - _var_var_128 / 647.096, 0)
+            _var_var_130 = _var_var_129 * -7.85952 + _var_var_129 ** 1.5 * 1.84408 + _var_var_129 ** 3 * -11.7866 + _var_var_129 ** 3.5 * 22.6807 + _var_var_129 ** 4 * -15.9619 + _var_var_129 ** 7.5 * 1.80123
+            _var_var_131 = 647.096 / _var_var_128
+            _var_var_132 = _var_var_131 * _var_var_130
+            _var_var_133 = np.exp(_var_var_132)
+            _var_var_134 = np.where(_var_var_133 != 1, _var_var_133 * 22064000, 0)
+            _var_var_135 = np.where(_var_var_128 < 273, _var_var_128 / 273.16, 1)
+            _var_var_136 = (1 - _var_var_135 ** -1.5) * -13.9282 + (1 - _var_var_135 ** -1.25) * 34.7078
+            _var_var_133 = np.exp(_var_var_136)
+            _var_var_137 = np.where(_var_var_133 != 1, _var_var_133 * 611.657, 0)
+            _var_var_138 = _var_var_134 + _var_var_137
+            _var_var_139 = relHumid * 0.01 * _var_var_138
+            _var_var_140 = barPress - _var_var_139
+            _var_var_141 = 0.621991 * _var_var_139 / _var_var_140
+            _var_var_142 = 1.01 + 1.89 * _var_var_141
+            _var_var_143 = _var_var_142 * airTemp
+            _var_var_144 = 2500 * _var_var_141
+            _var_var_145 = _var_var_143 + _var_var_144
+            _var_var_146 = np.maximum(_var_var_145, 0)
+        finally:
+            '__pyarmor_exit_47489__(...)'
+            return None
+            '__pyarmor_exit_47489__(...)'
+            return None
+
+
+finally:
+    '__pyarmor_exit_47468__(...)'
+return None
+

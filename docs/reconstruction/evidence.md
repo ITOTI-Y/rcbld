@@ -1,6 +1,6 @@
 # RCBld 重构现状证据：源码、引擎与示例
 
-> **引擎基准更新（2026-09-06）**：用户已指定 `archive/RCBldEng-v1.3.0.zip` 为当前依据，详见 [v1.3.0 核验记录](engine-v1.3.0.md)。本文原有 EXE 解析、CPython 3.12、CLI、目录布局、计算行为及缺陷证据仅适用于旧 `archive/RCBldEng.exe`，不得直接视为新版契约。广州 EPW 已提供；`.sim/.sol` 可构造受控测试输入，无需现成文件。已接受的产品需求保持，待复核的技术建议仍未批准。
+> **当前基准（2026-09-07）**：用户指定 [andersonspy/RCBIdEng](https://github.com/andersonspy/RCBIdEng) 进行协议确认，开发环境确定为 Python 3.9.11，重构项目使用 `dev`。上游 v1.3.0 正式发行 ZIP 与用户文件指纹一致；固定仓库提交中的 EXE 不同，不能代替正式发布包。仓库已提供 8 个 `.sim` 和 25 个历史 CSV，没有 `.sol` 或项目 Python 源码。详见 [上游协议核对](engine-protocol.md) 和 [发布包记录](engine-v1.3.0.md)。原文旧 EXE 的 CLI、算法和缺陷仅作历史线索；运行行为仍待 Windows/Rhino 验收。
 
 > **范围**：归档 C# 工程、`RCBldEng.exe`、手册及 `example.gh`。第 1–8 节为源码调查及后续主题；其后的引擎、接口、示例和技术栈章节补充交叉证据。仅调查和设计访谈，未修改业务代码。目录中存在的代码不等于已发布功能，静态字节码不等于经过运行验证的计算结果。
 >

@@ -1,0 +1,31 @@
+{
+  "release_sha256": "824b0cf2f84cb26634d3c920dd38aa97ad041984c6bf21dfc55f0e76bcbf0355",
+  "engine_sha256": "944939cbf14bad46f262543291758bb95527b6e70fa5c701c39d26b8560a4f43",
+  "runtime_sha256": "20cad40330c4a7102d3bb34e38197f60f38b7195d83d2a393d1ab0728b141551",
+  "python": "3.9.11 (main, Mar 18 2022, 20:15:41) \n[Clang 13.0.1 ]",
+  "carchive_entries": 12,
+  "pyz_entries": 723,
+  "inputs": {
+    "RCBldEng.pyc": {
+      "size": 3067,
+      "sha256": "7a55c3c44a223842863bfcf2687b787612687ddc84cce5da9d34b6a103f4f6d8"
+    },
+    "lib.pyc": {
+      "size": 70906,
+      "sha256": "564063addbdf1ee29ce8591e990d08c21b036c939520107a89f7961eafb2bad3"
+    },
+    "weather.pyc": {
+      "size": 12742,
+      "sha256": "12aa362808e83f5dceab02227777c120c8a3dc2160037b9d7a2da35ebb4b46ec"
+    },
+    "simulation.pyc": {
+      "size": 36617,
+      "sha256": "cc676478b864be839309bbbf1a6976475f5c79e7f636acc0ecbe6262835d6b60"
+    },
+    "comfort.pyc": {
+      "size": 9560,
+      "sha256": "49a48d8dae7c9179f67d6374c3b344da45f58ec86bd53dbedac8fff5422d7767"
+    }
+  },
+  "engine_executed": false
+}

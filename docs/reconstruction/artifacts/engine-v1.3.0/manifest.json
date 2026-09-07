@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-09-07T10:10:39.283910+00:00",
+  "release_sha256": "824b0cf2f84cb26634d3c920dd38aa97ad041984c6bf21dfc55f0e76bcbf0355",
+  "reverse_skill_commit": "7e2097fd90d25c2f976f6eba26d6c00aa88051df",
+  "unpacker_commit": "e64b5a288a1161862196e473fe40ea691205b58e",
+  "radare2_version": "6.2.2",
+  "pycryptodome_version": "3.23.0",
+  "files": {
+    "disassembly/RCBldEng.das": {
+      "bytes": 31587,
+      "sha256": "1235074886120e207d59ce715ba53e5586515aae90b4fea8518c033a3e13e5b3"
+    },
+    "disassembly/comfort.das": {
+      "bytes": 120351,
+      "sha256": "65576c137c86df269992cad4bccdfb041dd3673f038defd9718448f0e41fd8ce"
+    },
+    "disassembly/lib.das": {
+      "bytes": 1015987,
+      "sha256": "14e87ded7776223003da8c1bbc49592fe03d42199e537a0997f004c94295de60"
+    },
+    "disassembly/simulation.das": {
+      "bytes": 698868,
+      "sha256": "9a5c011fcc65e3cb6c5667946054483488433a11faa0d7bafeaf688398f2be74"
+    },
+    "disassembly/weather.das": {
+      "bytes": 189883,
+      "sha256": "fe5591ff233994b50ab0aa07258f71ec8c4442ed430284eddab3dcad8c0df3e3"
+    },
+    "decompiler-drafts/RCBldEng.txt": {
+      "bytes": 63,
+      "sha256": "fe8ed1c24a34de334f67ab6388a92de3a7e60f56a1cac02620a69d221226e63a"
+    },
+    "decompiler-drafts/comfort.txt": {
+      "bytes": 13202,
+      "sha256": "79066d6fbca75741b806716086b2ff88583850eaf1f42a4053fd78af9695c809"
+    },
+    "decompiler-drafts/lib.txt": {
+      "bytes": 112197,
+      "sha256": "7e90bc4e2b6c9755f6437eea9c5392d1737d90b9fe79b8a848a89c313c56b89d"
+    },
+    "decompiler-drafts/simulation.txt": {
+      "bytes": 70555,
+      "sha256": "0ae9d7232fa3393a80e00b1aa844025a465cad08d01e00814ee7c4e11bacecad"
+    },
+    "decompiler-drafts/weather.txt": {
+      "bytes": 17890,
+      "sha256": "d9ebf791a0c55298741414ee132841dfd532386dbcd0d0234ab7b2ebbb093b33"
+    },
+    "evidence/E-RCBldEng.md": {
+      "bytes": 771,
+      "sha256": "9f526634d4ec582667945572cd752b33048bfbf98757dd5992bc8df35ec205d9"
+    },
+    "evidence/E-comfort.md": {
+      "bytes": 767,
+      "sha256": "27f42c17c84361b8a7bb7347238d7b1b0371d43347ee3d8b988f71d016cd0d52"
+    },
+    "evidence/E-decompiler-log.md": {
+      "bytes": 797,
+      "sha256": "bae71440c1e181587e0437d31c6ace6d56ea16a7563ddf588ae6f051dbb2de7b"
+    },
+    "evidence/E-engine-imports.md": {
+      "bytes": 674,
+      "sha256": "359a4f6c9454f013e0bbca9f11f64fa84172b02645f1275537d6fd9419b77d92"
+    },
+    "evidence/E-extraction.md": {
+      "bytes": 764,
+      "sha256": "1154adc534ea731c19b8974d81a6511d4e1fbe0d04ceb06841122948bd1cd97f"
+    },
+    "evidence/E-lib.md": {
+      "bytes": 753,
+      "sha256": "3ac56d21f97f1fea70d44df46681f3c40a4672fb95b281807996d4bc25fa5412"
+    },
+    "evidence/E-runtime-imports.md": {
+      "bytes": 685,
+      "sha256": "bac9578e473927852065b53230ad9fdefea74a4b18eaa3e6bac7a2f5cb597abc"
+    },
+    "evidence/E-simulation.md": {
+      "bytes": 780,
+      "sha256": "82f5990f785eb3fac0178ce7a221368e30c3976ffe2562287b14dcb41df39511"
+    },
+    "evidence/E-validation.md": {
+      "bytes": 819,
+      "sha256": "838a028c8d2c95ffbe6da015c8d4a5caf92c3ec136e97ac260c28d4b9b82fe9a"
+    },
+    "evidence/E-weather.md": {
+      "bytes": 768,
+      "sha256": "a9df56529ae3290b47a05251efd0559571cada822f965c75e74b0f056689ad5e"
+    },
+    "evidence/engine-pe.json": {
+      "bytes": 12945,
+      "sha256": "d186c70c2c8487f7cbec162dff6ec87862cc9428c467f99100d353333a76ebfc"
+    },
+    "evidence/extraction.json": {
+      "bytes": 1088,
+      "sha256": "19d9faabfc547d6f98457de4f1ee318ddea10eefdc54f6b64842becddc113700"
+    },
+    "evidence/recovery-validation.json": {
+      "bytes": 3095,
+      "sha256": "fe6434c49a515d8c0402c213448b92104badedd89992fbb0c2a270306d937dcd"
+    },
+    "evidence/runtime-pe.json": {
+      "bytes": 37114,
+      "sha256": "78824eae2560db51bc6487a086e7bb76f6233620b8bbfae2be1c4042a2857753"
+    },
+    "evidence/unpacker-build-command.json": {
+      "bytes": 3799,
+      "sha256": "51dcfcc7f6c6c43511f3d8d3eda50bbc64db024d9cfd3c68284baa83e0e64648"
+    },
+    "evidence/unpacker-build-result.json": {
+      "bytes": 217,
+      "sha256": "5ed2560f5c42505735cc7410cca8042c9c57f41f32515c4194013bc82317c393"
+    },
+    "evidence/unpacker-build.log": {
+      "bytes": 468,
+      "sha256": "cd0b04a431d1d6dbae781fea57ae4915be54fc2cc0cf970196c2ab72b187d85c"
+    },
+    "evidence/unpacker-redacted.log": {
+      "bytes": 23336,
+      "sha256": "4940445dd92fb0840e3d24b789e649a8f34e9c67b6b3dd6c13a646d07fa4aa2b"
+    }
+  }
+}

@@ -1,0 +1,380 @@
+'__pyarmor_enter_47491__(...)'
+
+try:
+    import os
+    import csv
+    import collections
+    import lib
+    import numpy as np
+    import pandas as pd
+    sigma = 90
+    area = 1
+    esc = 1367
+    r_g = 0.14
+    
+    class Weather:
+        '__pyarmor_enter_47494__(...)'
+        
+        try:
+            
+            def __init__(self, wea_file, **kwargs):
+                '__pyarmor_enter_47497__(...)'
+                
+                try:
+                    self.wea_file = wea_file
+                    self.cal_dict = { }
+                    for _var_var_0, _var_var_1 in kwargs.items():
+                        setattr(self, _var_var_0.replace(' ', '_'), _var_var_1)
+                    self.getWeather()
+                finally:
+                    '__pyarmor_exit_47498__(...)'
+                return None
+
+
+            
+            def getWeather(self):
+                '__pyarmor_enter_47500__(...)'
+                
+                try:
+                    _var_var_2 = { }
+                    with open(self.wea_file, 'r') as _var_var_3:
+                        _var_var_4 = csv.reader(_var_var_3)
+                        _var_var_4 = list(_var_var_4)
+                        _var_var_5 = _var_var_4[0]
+                        None(None, None, None)
+                    with None:
+                        if not None:
+                            pass
+                    if _var_var_5[-1] == '':
+                        self.latitude = float(_var_var_5[0])
+                        self.longitude = float(_var_var_5[1])
+                        self.time_zone = float(_var_var_5[2])
+                        self.LSM = 15 * self.time_zone
+                        _var_var_6 = pd.read_csv(self.wea_file, 1, **('skiprows',))
+                        _var_var_2['DBT'] = _var_var_6['Temperature'].values
+                        _var_var_2['RH'] = _var_var_6['Relative Humidity'].values
+                        _var_var_2['Eb'] = _var_var_6['DNI'].values
+                        _var_var_2['wind'] = _var_var_6['Wind Speed'].values
+                        _var_var_2['Egh'] = _var_var_6['GHI'].values
+                        _var_var_2['month'] = _var_var_6['Month'].values
+                        _var_var_2['day'] = _var_var_6['Day'].values
+                        _var_var_2['hour'] = _var_var_6['Hour'].values
+                        _var_var_2['Ed'] = _var_var_6['DHI'].values
+                        _var_var_2['pressure'] = _var_var_6['Pressure'].values
+                        _var_var_2['HIR'] = _var_var_6['HIR'].values
+                        _var_var_2['year'] = _var_var_6['Year'].values
+                    else:
+                        self.location = _var_var_5[1]
+                        self.latitude = float(_var_var_5[-4])
+                        self.longitude = float(_var_var_5[-3])
+                        self.time_zone = float(_var_var_5[-2])
+                        self.LSM = 15 * self.time_zone
+                        _var_var_7 = pd.read_csv(self.wea_file, 8, None, **('skiprows', 'header'))
+                        _var_var_2['DBT'] = _var_var_7.iloc[(:, 6)].values
+                        _var_var_2['RH'] = _var_var_7.iloc[(:, 8)].values
+                        _var_var_2['Eb'] = _var_var_7.iloc[(:, 14)].values
+                        _var_var_2['wind'] = _var_var_7.iloc[(:, 21)].values
+                        _var_var_2['Egh'] = _var_var_7.iloc[(:, 13)].values
+                        _var_var_2['month'] = _var_var_7.iloc[(:, 1)].values
+                        _var_var_2['day'] = _var_var_7.iloc[(:, 2)].values
+                        _var_var_2['hour'] = _var_var_7.iloc[(:, 3)].values
+                        _var_var_2['Ed'] = _var_var_7.iloc[(:, 15)].values
+                        _var_var_2['pressure'] = _var_var_7.iloc[(:, 9)].values
+                        _var_var_2['HIR'] = _var_var_7.iloc[(:, 12)].values
+                        _var_var_2['year'] = _var_var_7.iloc[(:, 0)].values
+                    _var_var_2['T_er'] = (_var_var_2['HIR'] / 5.6697e-08) ** 0.25 - 273.15
+                    self.wea_dict = _var_var_2
+                finally:
+                    '__pyarmor_exit_47501__(...)'
+                return None
+
+
+            
+            def cal_Ydate(self):
+                '__pyarmor_enter_47503__(...)'
+                
+                try:
+                    _var_var_8 = self.wea_dict['month']
+                    _var_var_9 = self.wea_dict['day']
+                    _var_var_10 = [
+                        1]
+                    for _var_var_11 in range(1, len(_var_var_9)):
+                        if _var_var_8[_var_var_11] == _var_var_8[_var_var_11 - 1]:
+                            _var_var_10.append(_var_var_10[_var_var_11 - 1] + _var_var_9[_var_var_11] - _var_var_9[_var_var_11 - 1])
+                            continue
+                        _var_var_10.append(_var_var_10[_var_var_11 - 1] + 1)
+                    self.cal_dict['Ydate'] = np.array(_var_var_10)
+                finally:
+                    '__pyarmor_exit_47504__(...)'
+                return None
+
+
+            
+            def cal_tao(self):
+                '__pyarmor_enter_47506__(...)'
+                
+                try:
+                    _var_var_10 = self.cal_dict['Ydate']
+                    self.cal_dict['tao'] = 2 * np.pi * (_var_var_10 - 1) / 365
+                finally:
+                    '__pyarmor_exit_47507__(...)'
+                return None
+
+
+            
+            def cal_ET(self):
+                '__pyarmor_enter_47509__(...)'
+                
+                try:
+                    _var_var_12 = self.cal_dict['tao']
+                    self.cal_dict['ET'] = 2.2918 * (0.0075 + 0.1868 * np.cos(_var_var_12) - 3.2077 * np.sin(_var_var_12) - 1.4615 * np.cos(2 * _var_var_12) - 4.089 * np.sin(2 * _var_var_12))
+                finally:
+                    '__pyarmor_exit_47510__(...)'
+                return None
+
+
+            
+            def cal_AST(self):
+                '__pyarmor_enter_47512__(...)'
+                
+                try:
+                    _var_var_13 = self.cal_dict['ET']
+                    self.cal_dict['AST'] = self.wea_dict['hour'] + _var_var_13 / 60 + (self.longitude - self.LSM) / 15
+                finally:
+                    '__pyarmor_exit_47513__(...)'
+                return None
+
+
+            
+            def cal_solarDegree(self):
+                '__pyarmor_enter_47515__(...)'
+                
+                try:
+                    _var_var_10 = self.cal_dict['Ydate']
+                    self.cal_dict['delta'] = 23.45 * np.sin(((_var_var_10 + 284) / 365) * 2 * np.pi)
+                    self.cal_dict['theta_h'] = 15 * (self.cal_dict['AST'] - 12)
+                finally:
+                    '__pyarmor_exit_47516__(...)'
+                return None
+
+
+            
+            def cal_azimuth(self):
+                '__pyarmor_enter_47518__(...)'
+                
+                try:
+                    _var_var_14 = np.radians(self.cal_dict['delta'])
+                    _var_var_15 = np.radians(self.cal_dict['theta_h'])
+                    _var_var_16 = np.radians(self.latitude)
+                    _var_var_17 = np.cos(_var_var_16) * np.cos(_var_var_14) * np.cos(_var_var_15) + np.sin(_var_var_16) * np.sin(_var_var_14)
+                    _var_var_18 = np.arcsin(_var_var_17)
+                    _var_var_19 = np.degrees(_var_var_18)
+                    _var_var_20 = np.sin(_var_var_15) * np.cos(_var_var_14) / np.cos(_var_var_18)
+                    _var_var_21 = (np.cos(_var_var_15) * np.cos(_var_var_14) * np.sin(_var_var_16) - np.sin(_var_var_14) * np.cos(_var_var_16)) / np.cos(_var_var_18)
+                    _var_var_22 = np.degrees(np.arcsin(_var_var_20))
+                    _var_var_23 = np.degrees(np.arccos(_var_var_21))
+                    _var_var_24 = np.where(_var_var_20 > 0, _var_var_23, np.where(_var_var_21 > 0, _var_var_22, -180 - _var_var_22))
+                    self.cal_dict.update({
+                        'sin_beta': _var_var_17,
+                        'beta_rad': _var_var_18,
+                        'beta_deg': _var_var_19,
+                        'sin_fai': _var_var_20,
+                        'cos_fai': _var_var_21,
+                        'fai1_deg': _var_var_22,
+                        'fai2_deg': _var_var_23,
+                        'fai_deg': _var_var_24 })
+                finally:
+                    '__pyarmor_exit_47519__(...)'
+                return None
+
+
+            
+            def cal_surface(self):
+                '__pyarmor_enter_47521__(...)'
+                
+                try:
+                    self.cal_dict['surf'] = { }
+                    _var_var_18 = self.cal_dict['beta_rad']
+                    _var_var_20 = self.cal_dict['sin_fai']
+                    _var_var_21 = self.cal_dict['cos_fai']
+                    _var_var_24 = self.cal_dict['fai_deg']
+                    _var_var_25 = (self.wea_dict['Eb'] * np.sin(_var_var_18) + self.wea_dict['Ed']) * r_g * (1 - np.cos(np.radians(sigma))) / 2
+                    self.cal_dict['Et_r'] = _var_var_25
+                    _var_var_26 = lib.Surface()
+                    for _var_var_27, _var_var_28 in _var_var_26.iterAttributes():
+                        _var_var_29 = np.abs(_var_var_24 - _var_var_28)
+                        _var_var_30 = np.cos(_var_var_18) * np.cos(np.radians(_var_var_29)) * np.sin(np.radians(sigma)) + np.sin(_var_var_18) * np.cos(np.radians(sigma))
+                        _var_var_31 = np.degrees(np.arccos(_var_var_30))
+                        _var_var_32 = np.where((_var_var_29 > 90) & (_var_var_29 < 270), 0, np.where(_var_var_30 < 0, 0, self.wea_dict['Eb'] * _var_var_30))
+                        _var_var_33 = 0.55 + 0.437 * _var_var_30 + 0.313 * _var_var_30 ** 2
+                        _var_var_33 = np.where(_var_var_33 < 0.45, 0.45, _var_var_33)
+                        _var_var_34 = np.where(sigma <= 90, self.wea_dict['Ed'] * (_var_var_33 * np.sin(np.radians(sigma)) + np.cos(np.radians(sigma))), self.wea_dict['Ed'] * _var_var_33 * np.sin(np.radians(sigma)))
+                        self.cal_dict['surf'][_var_var_27] = {
+                            'gamma': _var_var_29,
+                            'cos_theta': _var_var_30,
+                            'theta': _var_var_31,
+                            'Et_b': _var_var_32,
+                            'Y': _var_var_33,
+                            'Et_d': _var_var_34,
+                            'GSR': _var_var_32 + _var_var_34 + _var_var_25 }
+                    self.cal_dict['surf']['R'] = {
+                        'GSR': self.wea_dict['Egh'] }
+                finally:
+                    '__pyarmor_exit_47522__(...)'
+                return None
+
+
+            
+            def cal_mmv(self):
+                '__pyarmor_enter_47524__(...)'
+                
+                try:
+                    _var_var_37 = [
+                        6.11,
+                        0.444,
+                        0.0143,
+                        0.000265,
+                        3.03e-06,
+                        2.03e-08,
+                        6.14e-11]
+                    _var_var_35 = [
+                        6.11,
+                        0.503,
+                        0.0189,
+                        0.000418,
+                        5.82e-06,
+                        4.84e-08,
+                        1.84e-10]
+                    
+                    def _var_var_36(lst, n, T):
+                        '__pyarmor_enter_47527__(...)'
+                        
+                        try:
+                            if n == 6:
+                                pass
+                        finally:
+                            return 0
+                            return lst[n] + T * recurse(lst, n + 1, T)
+                            '__pyarmor_exit_47528__(...)'
+                        return None
+
+
+                    _var_var_38 = self.wea_dict['DBT']
+                    _var_var_39 = None((lambda .0: [ recurse(water, 0, _var_var_46) for _var_var_46 in .0 ])(_var_var_38))
+                    _var_var_40 = None((lambda .0: [ recurse(ice, 0, _var_var_46) for _var_var_46 in .0 ])(_var_var_38))
+                    _var_var_41 = np.minimum(_var_var_39, _var_var_40)
+                    _var_var_42 = _var_var_41 * self.wea_dict['RH'] * 0.01
+                    _var_var_43 = _var_var_42 / self.wea_dict['pressure'] / 100
+                    _var_var_44 = _var_var_43 * 18.02 / (_var_var_43 * 18.02 + (1 - _var_var_43) * 28.96)
+                    _var_var_45 = 1000 * _var_var_44 / (1 - _var_var_44)
+                    self.cal_dict['mmv'] = _var_var_45
+                finally:
+                    '__pyarmor_exit_47525__(...)'
+                return None
+
+
+            
+            def cal_SRF(self):
+                '__pyarmor_enter_47530__(...)'
+                
+                try:
+                    self.cal_dict['overhang'] = { }
+                    self.cal_dict['fin'] = { }
+                    self.cal_dict['horizon'] = { }
+                    _var_var_26 = lib.Surface()
+                    _var_var_19 = self.cal_dict['beta_deg']
+                    _var_var_24 = self.cal_dict['fai_deg']
+                    _var_var_25 = self.cal_dict['Et_r']
+                    for _var_var_11 in range(15, 61, 15):
+                        self.cal_dict['overhang'][_var_var_11] = { }
+                        self.cal_dict['fin'][_var_var_11] = { }
+                        for _var_var_47, _var_var_48 in _var_var_26.iterAttributes():
+                            _var_var_49 = self.cal_dict['surf'][_var_var_47]['GSR']
+                            _var_var_32 = self.cal_dict['surf'][_var_var_47]['Et_b']
+                            _var_var_34 = self.cal_dict['surf'][_var_var_47]['Et_d']
+                            _var_var_50 = np.maximum(0, 1 - 0.5 * np.tan(np.radians(_var_var_11)) / np.tan(np.radians(90 - np.maximum(_var_var_19, 0))))
+                            self.cal_dict['overhang'][_var_var_11][_var_var_47] = np.where(_var_var_49 == 0, 0, (_var_var_50 * _var_var_32 + (1 - _var_var_11 / 90) * _var_var_34 + _var_var_25) / _var_var_49)
+                            if _var_var_47 in ('S', 'SE', 'E', 'NE'):
+                                _var_var_51 = (_var_var_24 - _var_var_48 > 90) | (_var_var_24 - _var_var_48 < 0)
+                            else:
+                                _var_var_51 = (_var_var_24 - _var_var_48 < -90) | (_var_var_24 - _var_var_48 > 0)
+                            _var_var_52 = np.maximum(0, 1 - 0.5 * np.tan(np.radians(_var_var_11)) / np.tan(np.radians(90 - np.abs(_var_var_24 - _var_var_48))))
+                            self.cal_dict['fin'][_var_var_11][_var_var_47] = np.where(_var_var_49 == 0, 0, np.where(_var_var_51, 1, (_var_var_52 * _var_var_32 + _var_var_34 + _var_var_25) / _var_var_49))
+                    for _var_var_11 in range(10, 81, 10):
+                        self.cal_dict['horizon'][_var_var_11] = { }
+                        for _var_var_47, _var_var_48 in _var_var_26.iterAttributes():
+                            _var_var_49 = self.cal_dict['surf'][_var_var_47]['GSR']
+                            _var_var_32 = self.cal_dict['surf'][_var_var_47]['Et_b']
+                            self.cal_dict['horizon'][_var_var_11][_var_var_47] = np.where(_var_var_49 == 0, 0, np.where(np.maximum(_var_var_19, 0) < _var_var_11, 1 - _var_var_32 / _var_var_49, 1))
+                finally:
+                    '__pyarmor_exit_47531__(...)'
+                return None
+
+
+            
+            def cal_Esol(self):
+                '__pyarmor_enter_47533__(...)'
+                
+                try:
+                    self.cal_dict['Esol'] = { }
+                    _var_var_18 = self.cal_dict['beta_rad']
+                    _var_var_53 = self.wea_dict['Egh']
+                    _var_var_24 = self.cal_dict['fai_deg']
+                    _var_var_26 = lib.Surface()
+                    _var_var_54 = _var_var_53 / np.sin(_var_var_18)
+                    for _var_var_55 in range(15, 91, 15):
+                        _var_var_56 = np.radians(_var_var_55)
+                        self.cal_dict['Esol'][_var_var_55] = { }
+                        for _var_var_47, _var_var_48 in _var_var_26.iterAttributes():
+                            _var_var_57 = np.radians(_var_var_48)
+                            _var_var_58 = _var_var_54 * (np.cos(_var_var_18) * np.sin(_var_var_56) * np.cos(np.radians(_var_var_24) - _var_var_57) + np.sin(_var_var_18) * np.cos(_var_var_56))
+                            self.cal_dict['Esol'][_var_var_55][_var_var_47] = np.clip(_var_var_58, 0, 1500)
+                finally:
+                    '__pyarmor_exit_47534__(...)'
+                return None
+
+
+            
+            def getCalDict(self):
+                '__pyarmor_enter_47536__(...)'
+                
+                try:
+                    self.cal_Ydate()
+                    self.cal_tao()
+                    self.cal_ET()
+                    self.cal_AST()
+                    self.cal_solarDegree()
+                    self.cal_azimuth()
+                    self.cal_surface()
+                    self.cal_mmv()
+                    self.cal_SRF()
+                    self.cal_Esol()
+                finally:
+                    '__pyarmor_exit_47537__(...)'
+                    return None
+                    '__pyarmor_exit_47537__(...)'
+                    return None
+
+
+            
+            def getWeaDict(self):
+                '__pyarmor_enter_47539__(...)'
+                
+                try:
+                    pass
+                finally:
+                    '__pyarmor_exit_47540__(...)'
+                    return None
+                    '__pyarmor_exit_47540__(...)'
+                    return None
+
+
+        finally:
+            '__pyarmor_exit_47495__(...)'
+        return None
+
+
+finally:
+    '__pyarmor_exit_47492__(...)'
+return None
+
