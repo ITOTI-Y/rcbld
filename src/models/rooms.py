@@ -1,7 +1,7 @@
 from pydantic import Field
 from Rhino import Geometry
 
-from models._share import BaseModel
+from src.models._share import BaseModel
 
 
 class Room(BaseModel):
