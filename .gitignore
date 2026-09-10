@@ -15,3 +15,6 @@ wheels/
 
 *.exe
 *.gha
+
+# Development files
+_dev/

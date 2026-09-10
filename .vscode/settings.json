@@ -1,0 +1,16 @@
+{
+    "python.analysis.extraPaths": [
+        "./src"
+    ],
+    "python.analysis.stubPath": "/mnt/c/Users/Pan/.rhinocode/py39-rh8/site-stubs/rhino3d-8.30.26103.11001",
+    "ty.configuration": {
+        "environment": {
+            "extra-paths": [
+                "/mnt/c/Users/Pan/.rhinocode/py39-rh8/site-stubs/rhino3d-8.30.26103.11001"
+            ]
+        }
+    },
+    "cursorpyright.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none"
+    }
+}
