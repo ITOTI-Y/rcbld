@@ -20,3 +20,8 @@ ignore = ["E501", "N805", "N806"]
 quote-style = "double"
 indent-style = "space"
 docstring-code-format = true
+
+[tool.ty.environment]
+extra-paths = [
+    "/mnt/c/Users/Pan/.rhinocode/py39-rh8/site-stubs/rhino3d-8.30.26103.11001",
+]

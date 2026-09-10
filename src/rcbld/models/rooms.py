@@ -1,7 +1,7 @@
 from pydantic import Field
 from Rhino import Geometry
 
-from src.models._share import BaseModel
+from rcbld.models._share import BaseModel
 
 
 class Room(BaseModel):
@@ -11,6 +11,7 @@ class Room(BaseModel):
     volume_m3: float
     envelope_area_m2: float
     tolerance: float
+
 
 class RoomChecks(BaseModel):
     rooms: list[Room] = Field(default_factory=list)
