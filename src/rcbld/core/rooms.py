@@ -2,34 +2,21 @@ from collections.abc import Iterable
 from math import isfinite
 from typing import cast
 
-import Rhino
-from Rhino import Geometry
+from Rhino import Geometry, RhinoDoc
+from System import Guid
 
+from rcbld.core._share import model_scale
 from rcbld.models.rooms import Room, RoomChecks
 
 
-def model_scale(document: Rhino.RhinoDoc) -> tuple[float, float]:
-    units = document.ModelUnitSystem
-    unsupported = (
-        Rhino.UnitSystem.NONE,  # ty: ignore[unresolved-attribute]
-        Rhino.UnitSystem.Unset,
-        Rhino.UnitSystem.CustomUnits,
-    )
-    if units in unsupported:
-        raise ValueError(
-            "Set a standard Rhino model unit, such as meters or millimeters."
-        )
-    scale = Rhino.RhinoMath.UnitScale(units, Rhino.UnitSystem.Meters)
-    tolerance = document.ModelAbsoluteTolerance
-    if not isfinite(scale) or scale <= 0:
-        raise ValueError("The model unit cannot be converted to meters.")
-    if not isfinite(tolerance) or tolerance <= 0:
-        raise ValueError("The Rhino absolute tolerance must be positive and finite.")
-    return scale, tolerance
-
-
 def prepare_room(
-    item: Geometry.Brep, name: str, source_index: int, scale: float, tolerance: float
+    item: Geometry.Brep,
+    name: str,
+    room_key: str,
+    reference_id: str,
+    source_index: int,
+    scale: float,
+    tolerance: float,
 ) -> Room:
     if not item.IsValid:
         raise ValueError(
@@ -85,6 +72,8 @@ def prepare_room(
         raise ValueError("The room geometry could not be converted to meters.")
 
     return Room(
+        room_key=room_key,
+        reference_id=reference_id,
         source_index=source_index,
         name=name,
         brep_m=body,
@@ -97,7 +86,9 @@ def prepare_room(
 def check_rooms(
     items: list[object],
     supplied_names: list[object],
-    document: Rhino.RhinoDoc,
+    supplied_keys: list[object],
+    references: list[object],
+    document: RhinoDoc,
 ) -> RoomChecks:
     if not items:
         raise ValueError("Connect at least one room Brep.")
@@ -106,6 +97,28 @@ def check_rooms(
             f"Names must be empty or contain {len(items)} entries; "
             f"received {len(supplied_names)}."
         )
+    if len(references) != len(items):
+        raise ValueError(
+            f"References must contain {len(items)} entries; received {len(references)}."
+        )
+    if supplied_keys:
+        if len(supplied_keys) != len(items):
+            raise ValueError(
+                f"Keys must be empty or contain {len(items)} entries; "
+                f"received {len(supplied_keys)}."
+            )
+        keys: list[str] = []
+        for entered_key in supplied_keys:
+            if not isinstance(entered_key, str) or not entered_key.strip():
+                raise ValueError("Every room key must be nonblank text.")
+            keys.append(entered_key.strip())
+    else:
+        keys = resolve_room_keys(references, document)
+    if len(set(keys)) != len(keys):
+        raise ValueError(
+            "Room keys must be unique. Rename copied Rhino objects or supply keys."
+        )
+
     scale, tolerance = model_scale(document)
     result = RoomChecks()
     candidates = []
@@ -122,7 +135,15 @@ def check_rooms(
                 if not isinstance(entered_name, str) or not entered_name.strip():
                     raise ValueError("The room name must be nonblank text.")
                 name = entered_name.strip()
-            room = prepare_room(item, name, index, scale, tolerance)
+            room = prepare_room(
+                item,
+                name,
+                keys[index],
+                _reference_text(references[index]),
+                index,
+                scale,
+                tolerance,
+            )
         except ValueError as error:
             message = f"[{index + 1}] {name}: ERROR - {error}"
             if isinstance(item, Geometry.GeometryBase):
@@ -148,3 +169,28 @@ def check_rooms(
         for room in candidates:
             room.brep_m.Dispose()  # ty: ignore[too-many-positional-arguments]
     return result
+
+
+def _reference_text(reference: object) -> str:
+    if isinstance(reference, Guid) and reference != Guid.Empty:
+        return str(reference)
+    return ""
+
+
+def resolve_room_keys(references: list[object], document: RhinoDoc) -> list[str]:
+    keys: list[str] = []
+    for index, reference in enumerate(references):
+        if not isinstance(reference, Guid) or reference == Guid.Empty:
+            raise ValueError(
+                f"[{index + 1}] The input is not a referenced Rhino object. "
+                "Bake it or supply keys."
+            )
+        rhino_object = document.Objects.FindId(reference)
+        if rhino_object is None:
+            raise ValueError(
+                f"[{index + 1}] Referenced object {reference} is not in the document."
+            )
+        name = rhino_object.Attributes.Name or ""
+        user_key = rhino_object.Attributes.GetUserString("room_key") or ""
+        keys.append(name.strip() or user_key.strip() or str(reference)[:8])
+    return keys

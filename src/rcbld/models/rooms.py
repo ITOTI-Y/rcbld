@@ -5,6 +5,8 @@ from rcbld.models._share import BaseModel
 
 
 class Room(BaseModel):
+    room_key: str
+    reference_id: str
     source_index: int
     name: str
     brep_m: Geometry.Brep
