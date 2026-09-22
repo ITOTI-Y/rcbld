@@ -3,25 +3,32 @@ Optimized version of the CBE Comfort tool comfort models.
 """
 
 import numpy as np
+
 # from numba import njit
 
-#@njit
+
+# @njit
 def findSaturatedVaporPressureTorr(T):
     return np.exp(18.6686 - 4030.183 / (T + 235.0))
 
-#@njit
+
+# @njit
 def comfPMVElevatedAirspeed(ta, tr, vel, rh, met, clo, wme):
     set = comfPierceSET(ta, tr, vel, rh, met, clo, wme)
     stillAirThreshold = 0.1
 
     def utilSecant(a, b, epsilon):
         def fn(t):
-            return set - comfPierceSET(ta - t, tr - t, stillAirThreshold, rh, met, clo, wme)
-        
+            return set - comfPierceSET(
+                ta - t, tr - t, stillAirThreshold, rh, met, clo, wme
+            )
+
         f1 = fn(a)
-        return np.where(np.abs(f1) <= epsilon, a,
-                        np.where(np.abs(fn(b)) <= epsilon, b,
-                                 b - fn(b) / ((fn(b) - f1) / (b - a))))
+        return np.where(
+            np.abs(f1) <= epsilon,
+            a,
+            np.where(np.abs(fn(b)) <= epsilon, b, b - fn(b) / ((fn(b) - f1) / (b - a))),
+        )
 
     if np.all(vel <= stillAirThreshold):
         pmv, ppd = comfPMV(ta, tr, vel, rh, met, clo, wme)
@@ -34,7 +41,8 @@ def comfPMVElevatedAirspeed(ta, tr, vel, rh, met, clo, wme):
 
     return pmv
 
-#@njit
+
+# @njit
 def comfPMV(ta, tr, vel, rh, met, clo, wme):
     pa = rh * 10 * np.exp(16.6536 - 4030.183 / (ta + 235))
 
@@ -77,11 +85,14 @@ def comfPMV(ta, tr, vel, rh, met, clo, wme):
 
     ts = 0.303 * np.exp(-0.036 * m) + 0.028
     pmv = ts * (mw - hl1 - hl2 - hl3 - hl4 - hl5 - hl6)
-    ppd = 100.0 - 95.0 * np.exp(-0.03353 * np.power(pmv, 4.0) - 0.2179 * np.power(pmv, 2.0))
+    ppd = 100.0 - 95.0 * np.exp(
+        -0.03353 * np.power(pmv, 4.0) - 0.2179 * np.power(pmv, 2.0)
+    )
 
     return pmv, ppd
 
-#@njit
+
+# @njit
 def comfPierceSET(ta, tr, vel, rh, met, clo, wme):
     VaporPressure = (rh * findSaturatedVaporPressureTorr(ta)) / 100
     AirVelocity = np.maximum(vel, 0.1)
@@ -116,10 +127,17 @@ def comfPierceSET(ta, tr, vel, rh, met, clo, wme):
     RM = met * METFACTOR
     M = met * METFACTOR
 
-    WCRIT = np.where(clo <= 0, 0.38 * np.power(AirVelocity, -0.29), 0.59 * np.power(AirVelocity, -0.08))
+    WCRIT = np.where(
+        clo <= 0,
+        0.38 * np.power(AirVelocity, -0.29),
+        0.59 * np.power(AirVelocity, -0.08),
+    )
     ICL = np.where(clo <= 0, 1.0, 0.45)
 
-    CHC = np.maximum(3.0 * np.power(PressureInAtmospheres, 0.53), 8.600001 * np.power((AirVelocity * PressureInAtmospheres), 0.53))
+    CHC = np.maximum(
+        3.0 * np.power(PressureInAtmospheres, 0.53),
+        8.600001 * np.power((AirVelocity * PressureInAtmospheres), 0.53),
+    )
     CHR = 4.7
     CTC = CHR + CHC
     RA = 1.0 / (FACL * CTC)
@@ -144,25 +162,27 @@ def comfPierceSET(ta, tr, vel, rh, met, clo, wme):
         SKSIG = TempSkin - TempSkinNeutral
         WARMS = np.maximum(0, SKSIG)
         COLDS = np.maximum(0, -SKSIG)
-        CRSIG = (TempCore - TempCoreNeutral)
+        CRSIG = TempCore - TempCoreNeutral
         WARMC = np.maximum(0, CRSIG)
         COLDC = np.maximum(0, -CRSIG)
         BDSIG = TB - TempBodyNeutral
         WARMB = np.maximum(0, BDSIG)
         COLDB = np.maximum(0, -BDSIG)
-        SkinBloodFlow = np.clip((SkinBloodFlowNeutral + CDIL * WARMC) / (1 + CSTR * COLDS), 0.5, 90.0)
+        SkinBloodFlow = np.clip(
+            (SkinBloodFlowNeutral + CDIL * WARMC) / (1 + CSTR * COLDS), 0.5, 90.0
+        )
         REGSW = np.clip(CSW * WARMB * np.exp(WARMS / 10.7), None, 500.0)
         ERSW = 0.68 * REGSW
         REA = 1.0 / (LR * FACL * CHC)
         RECL = RCL / (LR * ICL)
-        EMAX = ((findSaturatedVaporPressureTorr(TempSkin) - VaporPressure) / (REA + RECL))
+        EMAX = (findSaturatedVaporPressureTorr(TempSkin) - VaporPressure) / (REA + RECL)
         PRSW = ERSW / EMAX
         PWET = np.clip(0.06 + 0.94 * PRSW, None, WCRIT)
         EDIF = PWET * EMAX - ERSW
         ESK = np.clip(ERSW + EDIF, None, EMAX)
         MSHIV = 19.4 * COLDS * COLDC
         M = RM + MSHIV
-        ALFA = 0.0417737 + 0.7451833 / (SkinBloodFlow + .585417)
+        ALFA = 0.0417737 + 0.7451833 / (SkinBloodFlow + 0.585417)
 
     # Compute heat storage and wet skin
     HSK = DRY + ESK
@@ -174,7 +194,9 @@ def comfPierceSET(ta, tr, vel, rh, met, clo, wme):
 
     # Define new heat flow terms, coeffs, and abbreviations
     CHRS = CHR
-    CTCS = np.where(met < 0.85, 3.0, np.maximum(3.0, 5.66 * np.power((met - 0.85), 0.39)))
+    CTCS = np.where(
+        met < 0.85, 3.0, np.maximum(3.0, 5.66 * np.power((met - 0.85), 0.39))
+    )
     CTCS = CTCS + CHRS  # Corrected this line
     RCLOS = 1.52 / ((met - wme / METFACTOR) + 0.6944) - 0.1835
     RCLS = 0.155 * RCLOS
@@ -189,55 +211,66 @@ def comfPierceSET(ta, tr, vel, rh, met, clo, wme):
     HE_S = 1.0 / (REAS + RECLS)
 
     # SET* (standardized humidity, clo, Pb, and CHC)
-    DELTA = .0001
+    DELTA = 0.0001
     X_OLD = TempSkin - HSK / HD_S
     X = X_OLD
     for _ in range(100):  # Set a maximum number of iterations
-        ERR1 = (HSK - HD_S * (TempSkin - X_OLD) - W * HE_S * (PSSK - 0.5 * findSaturatedVaporPressureTorr(X_OLD)))
-        ERR2 = (HSK - HD_S * (TempSkin - (X_OLD + DELTA)) - W * HE_S * (PSSK - 0.5 * findSaturatedVaporPressureTorr((X_OLD + DELTA))))
+        ERR1 = (
+            HSK
+            - HD_S * (TempSkin - X_OLD)
+            - W * HE_S * (PSSK - 0.5 * findSaturatedVaporPressureTorr(X_OLD))
+        )
+        ERR2 = (
+            HSK
+            - HD_S * (TempSkin - (X_OLD + DELTA))
+            - W * HE_S * (PSSK - 0.5 * findSaturatedVaporPressureTorr(X_OLD + DELTA))
+        )
         X = X_OLD - DELTA * ERR1 / (ERR2 - ERR1)
         dx = X - X_OLD
         X_OLD = X
-        if np.all(np.abs(dx) <= .01):
+        if np.all(np.abs(dx) <= 0.01):
             break
 
     return X
 
-#@njit
+
+# @njit
 def calcHumidRatio(airTemp, relHumid, barPress):
     TKelvin = np.array(airTemp) + 273
     Sigma = np.where(TKelvin >= 273, 1 - (TKelvin / 647.096), 0)
-    
-    ExpressResult = (Sigma * -7.85951783 +
-                     Sigma**1.5 * 1.84408259 +
-                     Sigma**3 * -11.7866487 +
-                     Sigma**3.5 * 22.6807411 +
-                     Sigma**4 * -15.9618719 +
-                     Sigma**7.5 * 1.80122502)
-    
+
+    ExpressResult = (
+        Sigma * -7.85951783
+        + Sigma**1.5 * 1.84408259
+        + Sigma**3 * -11.7866487
+        + Sigma**3.5 * 22.6807411
+        + Sigma**4 * -15.9618719
+        + Sigma**7.5 * 1.80122502
+    )
+
     CritTemp = 647.096 / TKelvin
     Exponent = CritTemp * ExpressResult
     Power = np.exp(Exponent)
     SatPress1 = np.where(Power != 1, Power * 22064000, 0)
-    
+
     Theta = np.where(TKelvin < 273, TKelvin / 273.16, 1)
-    Exponent2 = ((1 - (Theta**(-1.5))) * (-13.928169) +
-                 (1 - (Theta**(-1.25))) * 34.707823)
+    Exponent2 = (1 - (Theta ** (-1.5))) * (-13.928169) + (
+        1 - (Theta ** (-1.25))
+    ) * 34.707823
     Power = np.exp(Exponent2)
     SatPress2 = np.where(Power != 1, Power * 611.657, 0)
-    
+
     saturationPressure = SatPress1 + SatPress2
-    
+
     partialPressure = relHumid * 0.01 * saturationPressure
-    
+
     PressDiffer = barPress - partialPressure
     humidityRatio = 0.621991 * partialPressure / PressDiffer
-    
+
     EnVariable1 = 1.01 + (1.89 * humidityRatio)
     EnVariable2 = EnVariable1 * airTemp
     EnVariable3 = 2500 * humidityRatio
     EnVariable4 = EnVariable2 + EnVariable3
-    
+
     enthalpy = np.maximum(EnVariable4, 0)
     return humidityRatio, enthalpy, partialPressure, saturationPressure
-

@@ -23,6 +23,7 @@ pythonpath = ["src"]
 [tool.ruff]
 target-version = "py39"
 line-length = 88
+extend-exclude = ["archive"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "B", "C4", "UP", "SIM", "RUF", "N"]
@@ -35,3 +36,6 @@ docstring-code-format = true
 
 [tool.ty.environment]
 extra-paths = [".stubs"]
+
+[tool.ty.src]
+exclude = ["archive"]
