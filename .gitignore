@@ -18,3 +18,7 @@ wheels/
 
 # Development files
 _dev/
+
+.env
+
+.stubs
