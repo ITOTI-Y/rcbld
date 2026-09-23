@@ -1,110 +1,167 @@
-from collections.abc import Iterable
+from collections.abc import Callable
 from math import isfinite
-from typing import cast
+from typing import Optional
 
-from Rhino import Geometry, RhinoDoc
-from System import Guid
+from rcbld.core.polygon import length
 
-from rcbld.core._share import model_scale
+from rcbld.models.geometry import ReferenceFacts, SolidFacts, Vec3
 from rcbld.models.rooms import Room, RoomChecks
 
 
+def _face_numbers(
+    facts: SolidFacts,
+    predicate: Callable[[int], bool],
+) -> str:
+    return ", ".join(
+        str(index + 1) for index, _ in enumerate(facts.faces) if predicate(index)
+    )
+
+
 def prepare_room(
-    item: Geometry.Brep,
+    facts: SolidFacts,
     name: str,
     room_key: str,
     reference_id: str,
     source_index: int,
-    scale: float,
-    tolerance: float,
+    tolerance_m: float,
 ) -> Room:
-    if not item.IsValid:
+    if not facts.is_valid:
         raise ValueError(
             "Rhino reports invalid geometry. Inspect the source with Check."
         )
-    if not item.IsSolid:
+    if not facts.is_solid:
         raise ValueError("The room is not a closed solid. Check open edges and joins.")
+    if facts.component_count > 1:
+        raise ValueError(
+            "One input contains separate solids. Supply one solid per room."
+        )
 
-    pieces = item.GetConnectedComponents()  # ty: ignore[too-many-positional-arguments]
-    try:
-        if len(pieces) > 1:
-            raise ValueError(
-                "One input contains separate solids. Supply one solid per room."
-            )
-    finally:
-        for piece in pieces:
-            piece.Dispose()
+    faces = facts.faces
+    curved = _face_numbers(facts, lambda index: not faces[index].is_planar)
+    if curved:
+        raise ValueError("Non-planar face numbers: " + curved)
+    holed = _face_numbers(facts, lambda index: faces[index].inner_loop_count > 0)
+    if holed:
+        raise ValueError(
+            "Faces with openings (inner loops): " + holed + ". Fill or split them."
+        )
+    broken = _face_numbers(facts, lambda index: len(faces[index].vertices_m) < 3)
+    if broken:
+        raise ValueError(
+            "Face boundaries that are not closed polylines: " + broken + "."
+        )
+    unnormalized = _face_numbers(
+        facts, lambda index: abs(length(faces[index].normal) - 1.0) > 1e-6
+    )
+    if unnormalized:
+        raise ValueError("The face normal could not be determined: " + unnormalized)
 
-    curved_faces = [
-        str(index + 1)
-        for index, face in enumerate(cast(Iterable[Geometry.BrepFace], item.Faces))
-        if not face.IsPlanar(tolerance)
-    ]
-
-    if curved_faces:
-        raise ValueError("Non-planar face numbers: " + ", ".join(curved_faces))
-
-    orientation = item.SolidOrientation
-    if orientation not in (
-        Geometry.BrepSolidOrientation.Outward,
-        Geometry.BrepSolidOrientation.Inward,
-    ):
+    if facts.orientation == "none":
         raise ValueError("The solid orientation cannot be determined.")
-
-    volume_m3 = abs(item.GetVolume(1e-8, tolerance)) * scale**3
-    area_m2 = item.GetArea(1e-8, tolerance) * scale**2
-    if not isfinite(volume_m3) or volume_m3 <= 0:
+    if not isfinite(facts.volume_m3) or facts.volume_m3 <= 0:
         raise ValueError(
             "The room volume could not be measured as a positive finite value."
         )
-    if not isfinite(area_m2) or area_m2 <= 0:
+    if not isfinite(facts.area_m2) or facts.area_m2 <= 0:
         raise ValueError(
             "The envelope area could not be measured as a positive finite value."
         )
-
-    body = item.DuplicateBrep()  # ty: ignore[too-many-positional-arguments]
-    if orientation == Geometry.BrepSolidOrientation.Inward:
-        body.Flip()  # ty: ignore[too-many-positional-arguments]
-    if not body.Transform(
-        Geometry.Transform.Scale(cast(Geometry.Point3d, Geometry.Point3d.Origin), scale)
-    ):
-        body.Dispose()  # ty: ignore[too-many-positional-arguments]
-        raise ValueError("The room geometry could not be converted to meters.")
 
     return Room(
         room_key=room_key,
         reference_id=reference_id,
         source_index=source_index,
         name=name,
-        brep_m=body,
-        volume_m3=volume_m3,
-        envelope_area_m2=area_m2,
-        tolerance=tolerance,
+        faces=faces,
+        bounds_min_m=facts.bounds_min_m,
+        bounds_max_m=facts.bounds_max_m,
+        volume_m3=facts.volume_m3,
+        envelope_area_m2=facts.area_m2,
+        tolerance_m=tolerance_m,
     )
 
 
+def resolve_room_keys(references: list[ReferenceFacts]) -> list[str]:
+    keys: list[str] = []
+    for index, reference in enumerate(references):
+        if not reference.reference_id:
+            raise ValueError(
+                f"[{index + 1}] The input is not a referenced Rhino object. "
+                "Bake it or supply keys."
+            )
+        if not reference.in_document:
+            raise ValueError(
+                f"[{index + 1}] Referenced object {reference.reference_id} "
+                "is not in the document."
+            )
+        keys.append(
+            reference.name.strip()
+            or reference.user_key.strip()
+            or reference.reference_id[:8]
+        )
+    return keys
+
+
+def _center(facts: SolidFacts) -> Vec3:
+    low, high = facts.bounds_min_m, facts.bounds_max_m
+    return Vec3(
+        (low[0] + high[0]) / 2,
+        (low[1] + high[1]) / 2,
+        (low[2] + high[2]) / 2,
+    )
+
+def _boxes_touch(first: Room, second: Room, tolerance_m: float) -> bool:
+    for axis in range(3):
+        low = max(first.bounds_min_m[axis], second.bounds_min_m[axis])
+        high = min(first.bounds_max_m[axis], second.bounds_max_m[axis])
+        if high - low < tolerance_m:
+            return False
+    return True
+
+def _check_overlap(
+    rooms: list[Room],
+    tolerance_m: float,
+    overlap_volume: Callable[[int, int], Optional[float]]
+) -> None:
+    for index, first in enumerate(rooms):
+        for second in rooms[index + 1:]:
+            if not _boxes_touch(first, second, tolerance_m):
+                continue
+            volume = overlap_volume(first.source_index, second.source_index)
+            if volume is None:
+                raise ValueError(
+                    f"Overlap between {first.room_key} and {second.room_key} "
+                    "could not be determined. Check the solids with Intersect."
+                )
+            if volume > 1e-6 * min(first.volume_m3, second.volume_m3):
+                raise ValueError(
+                    f"Rooms {first.room_key} and {second.room_key} overlap "
+                    f"by {volume:.6g} m3."
+                )
+
 def check_rooms(
-    items: list[object],
+    facts: list[Optional[SolidFacts]],
     supplied_names: list[object],
     supplied_keys: list[object],
-    references: list[object],
-    document: RhinoDoc,
+    references: list[ReferenceFacts],
+    tolerance_m: float,
+    overlap_volume: Callable[[int, int], Optional[float]],
 ) -> RoomChecks:
-    if not items:
+    if not facts:
         raise ValueError("Connect at least one room Brep.")
-    if supplied_names and len(supplied_names) != len(items):
+    if supplied_names and len(supplied_names) != len(facts):
         raise ValueError(
-            f"Names must be empty or contain {len(items)} entries; "
+            f"Names must be empty or contain {len(facts)} entries; "
             f"received {len(supplied_names)}."
         )
-    if len(references) != len(items):
+    if len(references) != len(facts):
         raise ValueError(
-            f"References must contain {len(items)} entries; received {len(references)}."
+            f"References must contain {len(facts)} entries; received {len(references)}."
         )
     if supplied_keys:
-        if len(supplied_keys) != len(items):
+        if len(supplied_keys) != len(facts):
             raise ValueError(
-                f"Keys must be empty or contain {len(items)} entries; "
+                f"Keys must be empty or contain {len(facts)} entries; "
                 f"received {len(supplied_keys)}."
             )
         keys: list[str] = []
@@ -113,20 +170,19 @@ def check_rooms(
                 raise ValueError("Every room key must be nonblank text.")
             keys.append(entered_key.strip())
     else:
-        keys = resolve_room_keys(references, document)
+        keys = resolve_room_keys(references)
     if len(set(keys)) != len(keys):
         raise ValueError(
             "Room keys must be unique. Rename copied Rhino objects or supply keys."
         )
 
-    scale, tolerance = model_scale(document)
     result = RoomChecks()
-    candidates = []
+    candidates: list[Room] = []
 
-    for index, item in enumerate(items):
+    for index, item in enumerate(facts):
         name = f"Room {index + 1}"
         try:
-            if not isinstance(item, Geometry.Brep):
+            if item is None:
                 raise ValueError(
                     "Expected a Brep. Pass solids through a Brep parameter first."
                 )
@@ -139,58 +195,32 @@ def check_rooms(
                 item,
                 name,
                 keys[index],
-                _reference_text(references[index]),
+                references[index].reference_id,
                 index,
-                scale,
-                tolerance,
+                tolerance_m,
             )
         except ValueError as error:
             message = f"[{index + 1}] {name}: ERROR - {error}"
-            if isinstance(item, Geometry.GeometryBase):
-                result.invalid.append(item)
+            result.invalid_indices.append(index)
         else:
             candidates.append(room)
-            result.preview.append(item)
+            result.preview_indices.append(index)
             message = (
                 f"[{index + 1}] {name}: OK | "
                 f"V = {room.volume_m3:.6g} m3 | "
                 f"Envelope = {room.envelope_area_m2:.6g} m2"
             )
         result.report.append(message)
-        if isinstance(item, Geometry.GeometryBase):
-            bounds = item.GetBoundingBox(True)
-            if bounds.IsValid:
-                result.points.append(bounds.Center)
-                result.labels.append(message)
-    result.ready = len(candidates) == len(items)
-    if result.ready:
-        result.rooms = candidates
-    else:
-        for room in candidates:
-            room.brep_m.Dispose()  # ty: ignore[too-many-positional-arguments]
+        if item is not None:
+            result.points.append(_center(item))
+            result.labels.append(message)
+
+    if len(candidates) != len(facts):
+        return result
+    try:
+        _check_overlap(candidates, tolerance_m, overlap_volume)
+    except ValueError as error:
+        result.report.append(str(error))
+    result.rooms = candidates
+    result.ready = True
     return result
-
-
-def _reference_text(reference: object) -> str:
-    if isinstance(reference, Guid) and reference != Guid.Empty:
-        return str(reference)
-    return ""
-
-
-def resolve_room_keys(references: list[object], document: RhinoDoc) -> list[str]:
-    keys: list[str] = []
-    for index, reference in enumerate(references):
-        if not isinstance(reference, Guid) or reference == Guid.Empty:
-            raise ValueError(
-                f"[{index + 1}] The input is not a referenced Rhino object. "
-                "Bake it or supply keys."
-            )
-        rhino_object = document.Objects.FindId(reference)
-        if rhino_object is None:
-            raise ValueError(
-                f"[{index + 1}] Referenced object {reference} is not in the document."
-            )
-        name = rhino_object.Attributes.Name or ""
-        user_key = rhino_object.Attributes.GetUserString("room_key") or ""
-        keys.append(name.strip() or user_key.strip() or str(reference)[:8])
-    return keys
